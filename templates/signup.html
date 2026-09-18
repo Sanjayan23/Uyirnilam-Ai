@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Uyirnilam AI - Initialize Account</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-responsive.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header_styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Uyirnilam AI">
+    <script>
+        // FOUC Mitigation: Reveal page once styles are ready
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.body.classList.add('reveal');
+            }, 100);
+        });
+    </script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary-fixed-variant": "#006853",
+                        "surface-container-highest": "#002c22",
+                        "on-background": "#d3fded",
+                        "surface-container-low": "#001711",
+                        "primary": "#69f6b8",
+                        "on-primary-fixed-variant": "#006544",
+                        "on-surface": "#d3fded",
+                        "surface-dim": "#00110c",
+                        "primary-fixed": "#69f6b8",
+                        "on-primary": "#005a3c",
+                        "outline-variant": "#294f43",
+                        "on-primary-fixed": "#00452d",
+                        "on-primary-container": "#002919",
+                        "on-error": "#490006",
+                        "surface-container-high": "#00251c",
+                        "surface-variant": "#002c22",
+                        "error-container": "#9f0519",
+                        "surface-container-lowest": "#000000",
+                        "tertiary-fixed-dim": "#00cdeb",
+                        "secondary-fixed": "#5afcd2",
+                        "surface-container": "#001e16",
+                        "on-secondary-fixed": "#004939",
+                        "on-surface-variant": "#8cb3a5",
+                        "primary-fixed-dim": "#58e7ab",
+                        "background": "#00110c",
+                        "tertiary-fixed": "#00dcfd",
+                        "secondary-container": "#006b56",
+                        "primary-dim": "#58e7ab",
+                        "tertiary": "#77e6ff",
+                        "surface-tint": "#69f6b8",
+                        "on-tertiary-container": "#004955",
+                        "tertiary-container": "#00dcfd",
+                        "secondary-dim": "#47edc4",
+                        "secondary": "#5afcd2",
+                        "outline": "#577d70",
+                        "error-dim": "#d7383b",
+                        "inverse-surface": "#e6fff4",
+                        "error": "#ff716c",
+                        "on-secondary": "#005d4a",
+                        "on-tertiary-fixed-variant": "#005360",
+                        "secondary-fixed-dim": "#47edc4",
+                        "on-error-container": "#ffa8a3",
+                        "on-secondary-container": "#defff2",
+                        "inverse-primary": "#006d4a",
+                        "inverse-on-surface": "#375c50",
+                        "on-tertiary-fixed": "#00343c",
+                        "tertiary-dim": "#00cdeb",
+                        "primary-container": "#06b77f",
+                        "surface": "#00110c",
+                        "surface-bright": "#003327",
+                        "on-tertiary": "#005360"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at center, #00251c 0%, #00110c 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(105, 246, 184, 0.1);
+        }
+
+        .neo-glow-button {
+            box-shadow: 0 0 20px rgba(105, 246, 184, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .neo-glow-button:hover {
+            box-shadow: 0 0 35px rgba(105, 246, 184, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Particle & Wave Effect Overlay */
+        .ambient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1000 1000' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+
+        /* Unique Logo Bounce, Spin, Glow, and Blink Animation */
+        @keyframes magic-bounce-blink {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1) rotate(0deg);
+                opacity: 1;
+                filter: brightness(1) drop-shadow(0 0 0 rgba(232, 195, 81, 0));
+            }
+
+            15% {
+                transform: translateY(-25px) scale(1.15) rotate(12deg);
+                opacity: 0.85;
+                filter: brightness(1.5) drop-shadow(0 0 35px #e8c351);
+            }
+
+            30% {
+                transform: translateY(8px) scale(0.9) rotate(-10deg);
+                opacity: 1;
+                filter: brightness(1) drop-shadow(0 0 0 rgba(232, 195, 81, 0));
+            }
+
+            45% {
+                transform: translateY(-18px) scale(1.1) rotate(8deg);
+                opacity: 0.6;
+                filter: brightness(1.8) drop-shadow(0 0 45px #22c55e);
+            }
+
+            60% {
+                transform: translateY(4px) scale(0.95) rotate(-4deg);
+                opacity: 1;
+                filter: brightness(1) drop-shadow(0 0 0 rgba(232, 195, 81, 0));
+            }
+
+            75% {
+                transform: translateY(-10px) scale(1.05) rotate(0deg);
+                opacity: 0.5;
+                filter: brightness(2) drop-shadow(0 0 30px #e8c351);
+            }
+
+            85% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+                filter: brightness(1);
+            }
+
+            /* Quick blink/strobe effect at the very end */
+            87% {
+                opacity: 0;
+                filter: brightness(2.5);
+                transform: scale(1.1);
+            }
+
+            90% {
+                opacity: 1;
+                filter: brightness(1);
+                transform: scale(1);
+            }
+
+            93% {
+                opacity: 0;
+                filter: brightness(2.5);
+                transform: scale(1.1);
+            }
+
+            96% {
+                opacity: 1;
+                filter: brightness(1);
+                transform: scale(1);
+            }
+
+            98% {
+                opacity: 0;
+                filter: brightness(2.5);
+                transform: scale(1.1);
+            }
+        }
+
+        .animate-magic-bounce {
+            animation: magic-bounce-blink 1.4s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
+        }
+
+        /* ── FOUC CLOAK ── */
+        .cloak {
+            opacity: 0;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal {
+            opacity: 1 !important;
+        }
+    </style>
+</head>
+
+<body class="flex flex-col text-on-surface antialiased cloak">
+    <div class="ambient-overlay"></div>
+    <!-- TopAppBar -->
+    <!-- ══════════ GLOBAL HEADER START ══════════ -->
+    <header class="uy-header">
+        <div class="uy-header-left">
+            <button type="button" class="mobile-menu-btn lg:hidden" onclick="toggleSidebar()" aria-label="Open Menu">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <div class="uy-logo-ring">
+                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Uyirnilam AI" class="uy-logo-img"
+                    onerror="this.src='https://ui-avatars.com/api/?name=U&background=e8c351&color=020f0c&size=64&bold=true'" />
+            </div>
+            <span class="uy-brand-name">Uyirnilam AI</span>
+        </div>
+        <div class="uy-search-wrap" id="uySearchWrap">
+            <div class="uy-search-box" id="uySearchBox">
+                <span class="uy-search-icon" id="uySearchToggle">
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                        <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.8" />
+                        <path d="M15 15l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                </span>
+                <input type="text" id="uySearchInput" class="uy-search-input"
+                    placeholder="Search crops, pages, diseases…" autocomplete="off" spellcheck="false" />
+                <span class="uy-search-clear" id="uySearchClear">
+                    <svg width="12" height="12" viewBox="0 0 12 12">
+                        <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" />
+                    </svg>
+                </span>
+            </div>
+            <div class="uy-search-dropdown" id="uySearchDropdown"></div>
+        </div>
+        <div class="uy-header-right">
+            <a href="/notifications"
+                class="uy-icon-btn {% if notification_count and notification_count > 0 %}uy-ringing{% endif %}"
+                title="Notifications">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M12.02 2.91C8.72 2.91 6.03 5.59 6.03 8.89V13.01C6.03 13.72 5.74 14.73 5.39 15.26L4.1 17.21C3.31 18.4 3.86 19.75 5.32 19.75H18.72C20.18 19.75 20.73 18.4 19.94 17.21L18.65 15.26C18.3 14.73 18.01 13.72 18.01 13.01V8.89C18.01 5.6 15.31 2.91 12.02 2.91Z"
+                        stroke="currentColor" stroke-width="1.8" stroke-miterlimit="10" stroke-linecap="round" />
+                    <path d="M13.87 3.2C13.56 3.11 13.24 3.04 12.91 3" stroke="currentColor" stroke-width="1.8"
+                        stroke-miterlimit="10" stroke-linecap="round" />
+                    <path
+                        d="M15.02 20.06C15.02 21.71 13.67 23.06 12.02 23.06C11.2 23.06 10.45 22.73 9.9 22.18C9.35 21.63 9.02 20.88 9.02 20.06"
+                        stroke="currentColor" stroke-width="1.8" stroke-miterlimit="10" />
+                </svg>
+                {% if notification_count and notification_count > 0 %}<span class="uy-badge">{{ notification_count if
+                    notification_count < 100 else '99+' }}</span>{% endif %}
+            </a>
+            <a href="/profile" class="uy-profile-btn" title="My Profile">
+                {% if user_photo %}<img src="{{ user_photo }}" alt="Profile" class="uy-avatar-img" />{% else %}<div
+                    class="uy-avatar-initials">{{ (user_name or 'F')[0].upper() }}</div>{% endif %}
+                <div class="uy-profile-info">
+                    <span class="uy-profile-name">{{ user_name or 'Farmer' }}</span>
+                    <span class="uy-profile-role">Verified Farmer</span>
+                </div>
+            </a>
+            <a href="/profile" class="uy-icon-btn" title="Settings">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                        stroke="currentColor" stroke-width="1.8" />
+                </svg>
+            </a>
+            <a href="/logout" class="uy-icon-btn uy-logout-btn" title="Logout">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" />
+                </svg>
+            </a>
+        </div>
+    </header>
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center pt-24 pb-12 px-4 z-10 w-full mx-auto">
+        <div
+            class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 rounded-3xl overflow-hidden glass-panel shadow-2xl">
+            <!-- Left Side: Visual Anchor -->
+            <div class="relative hidden lg:block overflow-hidden min-h-[700px]">
+                <img class="absolute inset-0 w-full h-full object-cover"
+                    data-alt="Vast atmospheric Dark Forest radial gradient with soft emerald glows and data-stream particle effects"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYwBmWwDxvraAxGwlVDZgZpciCaTLZnypiKv_gUS961ZQKFGBqPnRHmJav87isLM9p6WFVu37U72JucuJ5Mv6cXBdwXOuUTZzBuuqCuytA84mVnoq4EG1XrpJLhGvccYDetar9i7DpdS_mh3knFN-IzKS-25YwsG3AC4b6KrJA-SdaEkm9kCa9uRNfc9OhUTbE_OoR1EsE1hVawowkHYRejp00o23prxk2cqOs1Ci6TUBN15o8vskDY0MpR20zbm_fGSRdyggxv-08" />
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent opacity-90">
+                </div>
+                <div class="absolute bottom-12 left-12 right-12">
+                    <h2 class="text-4xl font-extrabold tracking-tight text-white mb-4 leading-tight">
+                        Cultivating the <br /><span class="text-primary">Bio-Intelligence</span> Era.
+                    </h2>
+                    <p class="text-on-surface-variant text-lg max-w-sm">
+                        Join our global network of sustainable farmers and AI researchers to redefine the future of
+                        agriculture.
+                    </p>
+                </div>
+            </div>
+            <!-- Right Side: Form -->
+            <div class="p-6 sm:p-8 lg:p-16 flex flex-col justify-center bg-surface-container/40">
+                <div class="mb-10 sm:mb-14">
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2 uppercase">Root into the Future
+                    </h1>
+                    <p class="text-on-surface-variant text-sm font-medium tracking-wide">INITIALIZE YOUR SECURE BIO-NODE
+                        ACCOUNT</p>
+                </div>
+                <form id="signupForm" class="space-y-10">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-emerald-500/80 tracking-widest uppercase px-1">Full
+                                Name</label>
+                            <input id="name" name="name" required
+                                class="w-full bg-surface-container-highest border-none rounded-xl py-3 px-4 text-on-surface focus:ring-1 focus:ring-secondary transition-all outline-none"
+                                placeholder="Dr. Sunder Pichai" type="text" />
+                        </div>
+                        <div class="space-y-1.5">
+                            <label class="text-xs font-bold text-emerald-500/80 tracking-widest uppercase px-1">Phone
+                                Number</label>
+                            <input id="phone" name="phone" required
+                                class="w-full bg-surface-container-highest border-none rounded-xl py-3 px-4 text-on-surface focus:ring-1 focus:ring-secondary transition-all outline-none"
+                                placeholder="+91 98765 43210" type="tel" />
+                        </div>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-emerald-500/80 tracking-widest uppercase px-1">Email
+                            Address</label>
+                        <input id="email" name="email" required
+                            class="w-full bg-surface-container-highest border-none rounded-xl py-3 px-4 text-on-surface focus:ring-1 focus:ring-secondary transition-all outline-none"
+                            placeholder="sunder@uyirnilam.ai" type="email" />
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-emerald-500/80 tracking-widest uppercase px-1">Role
+                            Selection</label>
+                        <select id="role" name="role" required
+                            class="w-full bg-surface-container-highest border-none rounded-xl py-3 px-4 text-on-surface focus:ring-1 focus:ring-secondary transition-all outline-none appearance-none">
+                            <option value="" disabled selected hidden>Select your specialization</option>
+                            <option value="farmer">Farmer / Cultivator</option>
+                            <option value="researcher">Agri-Tech Researcher</option>
+                            <option value="partner">Institutional Partner</option>
+                            <option value="supply">Supply Chain Orchestrator</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div class="space-y-1.5 relative">
+                            <label
+                                class="text-xs font-bold text-emerald-500/80 tracking-widest uppercase px-1">Password</label>
+                            <div class="relative">
+                                <input id="password" name="password" required
+                                    class="w-full bg-surface-container-highest border-none rounded-xl py-3 pl-4 pr-12 text-on-surface focus:ring-1 focus:ring-secondary transition-all outline-none"
+                                    placeholder="••••••••" type="password" />
+                                <button type="button" onclick="togglePasswordVisibility('password', 'passwordIcon')"
+                                    class="absolute inset-y-0 right-4 flex items-center text-on-surface-variant hover:text-emerald-400 transition-colors bg-transparent border-none">
+                                    <span id="passwordIcon"
+                                        class="material-symbols-outlined text-[20px]">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="space-y-1.5 relative">
+                            <label class="text-xs font-bold text-emerald-500/80 tracking-widest uppercase px-1">Confirm
+                                Password</label>
+                            <div class="relative">
+                                <input id="confirmPassword" name="confirmPassword" required
+                                    class="w-full bg-surface-container-highest border-none rounded-xl py-3 pl-4 pr-12 text-on-surface focus:ring-1 focus:ring-secondary transition-all outline-none"
+                                    placeholder="••••••••" type="password" />
+                                <button type="button"
+                                    onclick="togglePasswordVisibility('confirmPassword', 'confirmPasswordIcon')"
+                                    class="absolute inset-y-0 right-4 flex items-center text-on-surface-variant hover:text-emerald-400 transition-colors bg-transparent border-none">
+                                    <span id="confirmPasswordIcon"
+                                        class="material-symbols-outlined text-[20px]">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 py-2">
+                        <div class="relative flex items-center mt-0.5">
+                            <input id="terms" required type="checkbox" class="peer shrink-0 appearance-none w-5 h-5 border-2 border-[#577d70] rounded-full bg-transparent checked:bg-white checked:border-white cursor-pointer transition-all focus:outline-none m-0" />
+                            <svg class="absolute w-3 h-3 pointer-events-none hidden peer-checked:block text-[#002c22] left-1 top-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <label class="text-xs text-on-surface-variant leading-relaxed" for="terms">
+                            I agree to the <span class="text-emerald-400">Biological Data Governance Policy</span> and
+                            acknowledge the environmental impact terms of Uyirnilam AI.
+                        </label>
+                    </div>
+                    <button type="submit"
+                        class="block w-full text-center border-none bg-gradient-to-r from-primary to-primary-container py-4 rounded-xl font-bold text-on-primary tracking-widest uppercase neo-glow-button mt-4 cursor-pointer">
+                        Initialize Account
+                    </button>
+                    <div id="message" class="text-center text-sm font-bold mt-4 h-4"></div>
+                    <div class="text-center mt-8">
+                        <a class="text-sm font-medium text-emerald-700/60 hover:text-emerald-300 transition-all duration-300"
+                            href="/login">
+                            Already part of the canopy? <span
+                                class="text-emerald-400 underline decoration-emerald-400/30 underline-offset-4">Log in
+                                here</span>
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <!-- ══════════════════════════════════════════════════
+     GLOBAL FOOTER
+══════════════════════════════════════════════════ -->
+    <footer class="global-footer relative z-10 w-full">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Logo"
+                    class="w-full h-full rounded-full object-cover">
+            </div>
+            <h3 class="text-xl font-black text-white mb-4 tracking-tighter">Uyirnilam AI</h3>
+            <p class="footer-description">
+                The future of Intelligent Farming. Empowering sustainable agriculture through AI-driven insights for
+                Harvest, Market, Pest, and Irrigation management.
+            </p>
+
+            <nav class="footer-nav">
+                <a href="/dashboard" class="footer-link">Dashboard</a>
+                <a href="/irrigation" class="footer-link">Irrigation</a>
+                <a href="/harvest" class="footer-link">Harvest</a>
+                <a href="/pest" class="footer-link">Pest Control</a>
+                <a href="/market" class="footer-link">Market</a>
+            </nav>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-bottom">
+                <div class="footer-contact">
+                    <a href="tel:+919112260118" class="contact-item">
+                        <span class="material-symbols-outlined">Call</span>
+                        +91 9112260118
+                    </a>
+                    <a href="mailto:sanjayangounder@gmail.com" class="contact-item">
+                        <span class="material-symbols-outlined">Mail</span>
+                        sanjayangounder@gmail.com
+                    </a>
+                </div>
+
+                <div class="footer-social">
+                    <a href="https://www.linkedin.com/in/sanjayan-sankar-gounder-3b2aa6330" target="_blank"
+                        class="social-icon" aria-label="LinkedIn">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                            <path
+                                d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="founder-credit">Developed by Sanjayan Sankar Gounder</div>
+                <div class="copyright text-on-surface-variant/60">© 2026 Uyirnilam AI. All Rights Reserved.</div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/uy_header.js') }}"></script>
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const messageDiv = document.getElementById('message');
+
+            if (password !== confirmPassword) {
+                messageDiv.innerHTML = '<span class="text-red-400">✗ Passwords do not match.</span>';
+                return;
+            }
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                role: document.getElementById('role').value,
+                password: password,
+            };
+
+            messageDiv.innerHTML = '<span class="text-primary animate-pulse">Initializing node connection...</span>';
+
+            try {
+                const response = await fetch('/signup_submit', { // Assumes this endpoint processes creations
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    messageDiv.innerHTML = '<span class="text-primary drop-shadow-[0_0_10px_#1cd88c]">✓ Account securely created! Redirecting...</span>';
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 2000);
+                } else {
+                    messageDiv.innerHTML = '<span class="text-red-400">✗ ' + (data.message || 'Initialization failed.') + '</span>';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<span class="text-red-400">✗ Connection error to Bio-Node.</span>';
+            }
+        });
+
+        // 3. Logo Magic Animation Logic
+        const brandLogoContainer = document.getElementById('brandLogoContainer');
+        if (brandLogoContainer) {
+            brandLogoContainer.addEventListener('click', function (e) {
+                e.stopPropagation();
+                brandLogoContainer.classList.remove('animate-magic-bounce');
+                void brandLogoContainer.offsetWidth; // Force Reflow
+                brandLogoContainer.classList.add('animate-magic-bounce');
+                brandLogoContainer.addEventListener('animationend', () => {
+                    brandLogoContainer.classList.remove('animate-magic-bounce');
+                }, { once: true });
+            });
+        }
+
+        // 4. Password Visibility Toggle
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                input.type = 'password';
+                icon.textContent = 'visibility';
+            }
+        }
+    </script>
+    <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const icon = document.getElementById('menuIcon');
+
+            if (menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                icon.textContent = 'close';
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+            } else {
+                menu.classList.add('hidden');
+                icon.textContent = 'menu';
+                document.body.style.overflow = 'auto'; // Enable scrolling
+            }
+        }
+
+        // Close mobile menu when clicking outside
+        document.getElementById('mobileMenu')?.addEventListener('click', function (e) {
+            if (e.target === this) {
+                toggleMobileMenu();
+            }
+        });
+    </script>
+</body>
+
+</html>

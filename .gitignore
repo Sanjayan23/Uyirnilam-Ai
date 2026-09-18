@@ -1,0 +1,33 @@
+# Virtual Environments
+venv_stable/
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment Secrets & Production Keys
+.env
+.flaskenv
+
+# Local Databases
+*.db
+instance/
+
+# Editor / IDE
+.vscode/
+
+# OS Specific
+.DS_Store
+Thumbs.db
+
+# Large / Temporary files
+*.log
+*.tmp
+*.bak
+report.pdf

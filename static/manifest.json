@@ -1,0 +1,21 @@
+{
+    "name": "Uyirnilam AI",
+    "short_name": "Uyirnilam",
+    "description": "AI-powered farming platform",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#020f0c",
+    "theme_color": "#10b981",
+    "icons": [
+        {
+            "src": "/static/images/logo.jpg",
+            "sizes": "192x192",
+            "type": "image/jpeg"
+        },
+        {
+            "src": "/static/images/logo.jpg",
+            "sizes": "512x512",
+            "type": "image/jpeg"
+        }
+    ]
+}

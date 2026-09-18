@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Harvest Strategy | Uyirnilam AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-responsive.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header_styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/smooth-scroll.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Uyirnilam AI">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981",
+                        "surface": "#020f0c",
+                        "surface-variant": "#041c17",
+                        "on-surface": "#ecfdf5",
+                        "on-surface-variant": "#94a3b8"
+                    },
+                    fontFamily: { "sans": ["'Plus Jakarta Sans'", "sans-serif"] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: #020f0c;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #ecfdf5;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* 🎯 CROP SELECTION CARD ANIMATIONS */
+        .crop-selection-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .crop-selection-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .crop-selection-card:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .crop-selection-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.3);
+        }
+
+        .crop-selection-card.selected {
+            border: 2px solid #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%);
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4), inset 0 0 20px rgba(16, 185, 129, 0.1);
+        }
+
+        .crop-selection-card.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 32px;
+            height: 32px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #020f0c;
+            font-weight: bold;
+            font-size: 18px;
+            animation: checkmarkPop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes checkmarkPop {
+            0% {
+                transform: scale(0) rotate(-180deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        /* 🎨 HARVEST CARD REVEAL ANIMATION */
+        .harvest-card-reveal {
+            animation: revealCard 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            opacity: 0;
+            transform: translateY(40px) scale(0.95);
+        }
+
+        @keyframes revealCard {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 🔥 PULSE GLOW EFFECT */
+        .pulse-glow {
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+            }
+
+            50% {
+                box-shadow: 0 0 40px rgba(16, 185, 129, 0.6);
+            }
+        }
+
+        /* ⏱️ COUNTDOWN DIGIT FLIP */
+        .countdown-digit {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1;
+            position: relative;
+            display: inline-block;
+        }
+
+        .countdown-digit::before {
+            content: attr(data-value);
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            animation: digitFlip 1s ease;
+        }
+
+        @keyframes digitFlip {
+            0% {
+                opacity: 0;
+                transform: rotateX(-90deg);
+            }
+
+            50% {
+                opacity: 1;
+                transform: rotateX(0deg);
+            }
+
+            100% {
+                opacity: 0;
+                transform: rotateX(90deg);
+            }
+        }
+
+        /* 🌈 PROGRESS BAR SHIMMER */
+        .progress-shimmer {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-shimmer::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* 📊 CHART CONTAINER */
+        .chart-container {
+            position: relative;
+            opacity: 0;
+            transform: scale(0.9);
+            animation: chartAppear 0.6s ease forwards;
+        }
+
+        @keyframes chartAppear {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* 🎯 READINESS INDICATOR */
+        .readiness-pulse {
+            animation: readinessPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes readinessPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        /* 🔔 NOTIFICATION BADGE */
+        .notification-badge {
+            animation: badgeBounce 1s ease-in-out infinite;
+        }
+
+        @keyframes badgeBounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-4px);
+            }
+        }
+
+        /* 🌟 STAR RATING */
+        .star-rating {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .star-rating .star {
+            color: #fbbf24;
+            font-size: 20px;
+            animation: starTwinkle 1.5s ease-in-out infinite;
+        }
+
+        .star-rating .star:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .star-rating .star:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .star-rating .star:nth-child(4) {
+            animation-delay: 0.6s;
+        }
+
+        .star-rating .star:nth-child(5) {
+            animation-delay: 0.8s;
+        }
+
+        /* 🟢 MARKET-STYLE ACTIVE TAB HIGHLIGHT */
+        .active-tab {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4) !important;
+            background-color: rgba(16, 185, 129, 0.1) !important;
+            transform: scale(1.05);
+            z-index: 20;
+        }
+
+        .active-tab .absolute.inset-0 {
+            background-color: rgba(0, 0, 0, 0.2) !important;
+        }
+
+        @keyframes starTwinkle {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.6;
+                transform: scale(0.9);
+            }
+        }
+
+        /* 🌦️ PRECISION ATMOSPHERIC SYNC STYLES */
+        .weather-hub-gradient {
+            background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.05), transparent 40%),
+                radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.05), transparent 40%);
+        }
+
+        .weather-card-animate {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .weather-card-animate:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        @keyframes syncPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(1.2);
+            }
+        }
+
+        .sync-active {
+            animation: syncPulse 2s infinite;
+        }
+
+        /* 📱 MOBILE OPTIMIZATIONS */
+        @media (max-width: 768px) {
+            .countdown-digit {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased overflow-x-hidden">
+    <!-- ══════════ GLOBAL HEADER START ══════════ -->
+    <header class="uy-header">
+        <div class="uy-header-left">
+            <button type="button" class="mobile-menu-btn lg:hidden" onclick="toggleSidebar()" aria-label="Open Menu">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <div class="uy-logo-ring">
+                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Uyirnilam AI" class="uy-logo-img"
+                    onerror="this.src='https://ui-avatars.com/api/?name=U&background=e8c351&color=020f0c&size=64&bold=true'" />
+            </div>
+            <span class="uy-brand-name">Uyirnilam AI</span>
+        </div>
+        <div class="uy-search-wrap" id="uySearchWrap">
+            <div class="uy-search-box" id="uySearchBox">
+                <span class="uy-search-icon" id="uySearchToggle">
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                        <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.8" />
+                        <path d="M15 15l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                </span>
+                <input type="text" id="uySearchInput" class="uy-search-input"
+                    placeholder="Search crops, pages, diseases…" autocomplete="off" spellcheck="false" />
+                <span class="uy-search-clear" id="uySearchClear">
+                    <svg width="12" height="12" viewBox="0 0 12 12">
+                        <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" />
+                    </svg>
+                </span>
+            </div>
+            <div class="uy-search-dropdown" id="uySearchDropdown"></div>
+        </div>
+        <div class="uy-header-right">
+            <a href="/notifications"
+                class="uy-icon-btn {% if notification_count and notification_count > 0 %}uy-ringing{% endif %}"
+                title="Notifications">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M12.02 2.91C8.72 2.91 6.03 5.59 6.03 8.89V13.01C6.03 13.72 5.74 14.73 5.39 15.26L4.1 17.21C3.31 18.4 3.86 19.75 5.32 19.75H18.72C20.18 19.75 20.73 18.4 19.94 17.21L18.65 15.26C18.3 14.73 18.01 13.72 18.01 13.01V8.89C18.01 5.6 15.31 2.91 12.02 2.91Z"
+                        stroke="currentColor" stroke-width="1.8" stroke-miterlimit="10" stroke-linecap="round" />
+                    <path d="M13.87 3.2C13.56 3.11 13.24 3.04 12.91 3" stroke="currentColor" stroke-width="1.8"
+                        stroke-miterlimit="10" stroke-linecap="round" />
+                    <path
+                        d="M15.02 20.06C15.02 21.71 13.67 23.06 12.02 23.06C11.2 23.06 10.45 22.73 9.9 22.18C9.35 21.63 9.02 20.88 9.02 20.06"
+                        stroke="currentColor" stroke-width="1.8" stroke-miterlimit="10" />
+                </svg>
+                {% if notification_count and notification_count > 0 %}<span class="uy-badge">{{ notification_count if
+                    notification_count < 100 else '99+' }}</span>{% endif %}
+            </a>
+            <a href="/profile" class="uy-profile-btn" title="My Profile">
+                {% if user_photo %}<img src="{{ user_photo }}" alt="Profile" class="uy-avatar-img" />{% else %}<div
+                    class="uy-avatar-initials">{{ (user_name or 'F')[0].upper() }}</div>{% endif %}
+                <div class="uy-profile-info">
+                    <span class="uy-profile-name">{{ user_name or 'Farmer' }}</span>
+                    <span class="uy-profile-role">Verified Farmer</span>
+                </div>
+            </a>
+            <a href="/profile" class="uy-icon-btn" title="Settings">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                        stroke="currentColor" stroke-width="1.8" />
+                </svg>
+            </a>
+            <a href="/logout" class="uy-icon-btn uy-logout-btn" title="Logout">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" />
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- SIDEBAR (Keep existing) -->
+    <!-- Sidebar Backdrop for Mobile -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+    <aside id="mainSidebar"
+        class="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 bg-surface-variant/30 z-40 bg-[radial-gradient(circle_at_left,_rgba(16,185,129,0.08),_transparent_50%)]">
+        <div class="relative w-full h-full flex flex-col items-center justify-center">
+            <div
+                class="absolute inset-0 bg-gradient-to-br from-emerald-950/40 via-green-950/20 to-black/60 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]">
+            </div>
+            <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
+                style="background-image: radial-gradient(#10b981 1px, transparent 1px); background-size: 30px 30px;">
+            </div>
+            <div
+                class="absolute inset-0 bg-gradient-to-r from-[#e8c351]/10 via-emerald-500/5 to-transparent opacity-30 animate-pulse">
+            </div>
+            <div
+                class="absolute top-0 right-0 w-3 h-3 bg-emerald-400 rounded-bl-full shadow-[0_0_20px_rgba(16,185,129,0.9)] z-20">
+            </div>
+            <div
+                class="absolute bottom-0 left-0 w-3 h-3 bg-[#e8c351] rounded-tr-full shadow-[0_0_20px_rgba(232,195,81,0.9)] z-20">
+            </div>
+            <div class="relative z-10 w-full px-6 pt-24 flex flex-col items-center gap-12">
+                <div class="text-center group cursor-pointer">
+                    <div class="flex justify-center mb-6">
+                        <span
+                            class="material-symbols-outlined text-[#e8c351] text-5xl animate-bounce drop-shadow-[0_0_15px_rgba(232,195,81,0.5)]">wb_sunny</span>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-xl font-black leading-tight tracking-tighter uppercase">
+                            <span
+                                class="bg-gradient-to-r from-[#ffd700] via-[#e8c351] to-[#ffe082] bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(232,195,81,0.9)]">
+                                Smart Farming,
+                            </span>
+                        </p>
+                        <p class="text-xl font-black leading-tight tracking-tighter uppercase">
+                            <span
+                                class="bg-gradient-to-r from-emerald-300 via-green-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(16,185,129,0.9)]">
+                                Bright Future
+                            </span>
+                        </p>
+                    </div>
+                    <div
+                        class="mt-8 h-0.5 w-24 mx-auto bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent rounded-full">
+                    </div>
+                </div>
+                <nav class="w-full">
+                    <ul class="space-y-4">
+                        <li><a href="javascript:void(0)" onclick="navTo('/dashboard', 'Dashboard')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:rotate-12 transition-transform">grid_view</span>
+                                <span
+                                    class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Dashboard</span>
+                            </a></li>
+                        <li><a href="javascript:void(0)" onclick="navTo('/irrigation', 'Irrigation')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:scale-110 transition-transform">water_drop</span>
+                                <span
+                                    class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Irrigation</span>
+                            </a></li>
+                        <li><a href="javascript:void(0)" onclick="navTo('/harvest', 'Harvest')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:-rotate-12 transition-transform">agriculture</span>
+                                <span
+                                    class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Harvest</span>
+                            </a></li>
+                        <li><a href="javascript:void(0)" onclick="navTo('/pest', 'Pest Control')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:tada transition-transform">pest_control</span>
+                                <span class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Pest
+                                    Control</span>
+                            </a></li>
+                        <li><a href="javascript:void(0)" onclick="navTo('/market', 'Market Trends')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:translate-y--0.5 transition-transform">trending_up</span>
+                                <span class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Market
+                                    Trends</span>
+                            </a></li>
+                    </ul>
+                </nav>
+
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main id="main-content" class="lg:ml-64 layout-main-wrapper">
+        <div class="page-container">
+            <section class="page-section">
+                <div class="flex flex-col md:flex-row md:items-center items-start gap-4 mb-8">
+                    <div
+                        class="relative w-16 h-16 flex items-center justify-center bg-[#A855F7]/10 rounded-2xl shadow-[0_0_20px_rgba(168,85,247,0.1)] shrink-0">
+                        <span
+                            class="material-symbols-outlined text-[#A855F7] text-4xl animate-zigzag">agriculture</span>
+                        <div class="absolute inset-0 bg-[#A855F7]/5 blur-xl rounded-full animate-pulse"></div>
+                    </div>
+                    <div class="w-full">
+                        <h1
+                            class="text-3xl md:text-5xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-[#818CF8] via-[#A855F7] to-[#EC4899] drop-shadow-[0_4px_15px_rgba(168,85,247,0.3)]">
+                            Harvest Strategy</h1>
+                        <p class="animated-subtitle text-sm md:text-base mt-2">Maximum yield through AI-driven maturity analysis
+                        </p>
+
+                        <!-- Power Points Highlight -->
+                        <div class="power-points-container"
+                            style="--icon-color-start: #a855f7; --icon-color-end: #d946ef; --icon-glow: rgba(168, 85, 247, 0.4); gap: 1.5rem;">
+                            <div class="power-point-item flex-shrink-0">
+                                <span class="material-symbols-outlined shrink-0"
+                                    style="color: #a855f7;">event_available</span>
+                                <span class="point-text">Optimal Timing</span>
+                            </div>
+                            <div class="power-point-divider hidden md:block"></div>
+                            <div class="power-point-item flex-shrink-0">
+                                <span class="material-symbols-outlined shrink-0"
+                                    style="color: #a855f7;">assessment</span>
+                                <span class="point-text">Yield Prediction</span>
+                            </div>
+                            <div class="power-point-divider hidden md:block"></div>
+                            <div class="power-point-item flex-shrink-0">
+                                <span class="material-symbols-outlined shrink-0" style="color: #a855f7;">payments</span>
+                                <span class="point-text">Market Alignment</span>
+                            </div>
+                            <div class="power-point-divider hidden md:block"></div>
+                            <div class="power-point-item flex-shrink-0">
+                                <span class="material-symbols-outlined shrink-0" style="color: #a855f7;">psychology</span>
+                                <span class="point-text">Smart Forecast</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 🌤️ PRECISION ATMOSPHERIC SYNC (WEATHER HUB) -->
+            <section class="mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+                <div
+                    class="relative overflow-hidden rounded-[2.5rem] bg-surface-variant/30 border border-white/10 backdrop-blur-3xl shadow-2xl weather-hub-gradient">
+                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-[#A855F7]/5">
+                    </div>
+
+                    <!-- Content Layer -->
+                    <div class="relative z-10 p-8 md:p-10">
+                        <div
+                            class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 pb-8 border-b border-white/5">
+                            <div class="flex items-center gap-5">
+                                <div
+                                    class="w-16 h-16 rounded-2xl bg-cyan-500/20 flex items-center justify-center border border-cyan-500/30 shadow-[0_0_20px_rgba(34,211,238,0.2)]">
+                                    <span class="material-symbols-outlined text-cyan-400 text-4xl sync-active"
+                                        id="weatherIcon">cloud_sync</span>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span
+                                            class="text-[10px] font-black text-cyan-400 uppercase tracking-[0.3em]">Precision
+                                            Atmospheric Sync</span>
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                    </div>
+                                    <h3 class="text-3xl font-black text-white tracking-tight uppercase">AI
+                                        Hydro-Intelligence Hub</h3>
+                                </div>
+                            </div>
+
+                            <div id="harvest-weather-status"
+                                class="px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center gap-3">
+                                <span class="material-symbols-outlined text-emerald-400">check_circle</span>
+                                <span class="text-sm font-black text-white uppercase tracking-widest">Optimal Harvest
+                                    Window</span>
+                            </div>
+                        </div>
+
+                        <!-- Intelligence Grid -->
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                            <!-- Temp -->
+                            <div
+                                class="p-6 rounded-3xl bg-white/5 border border-white/10 text-center weather-card-animate group">
+                                <span
+                                    class="material-symbols-outlined text-orange-400 mb-3 group-hover:scale-110 transition-transform">thermostat</span>
+                                <p
+                                    class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">
+                                    Temperature</p>
+                                <p class="text-2xl font-black text-white"><span id="harvest-temp">--</span><span
+                                        class="text-sm opacity-60 ml-0.5">°C</span></p>
+                            </div>
+                            <!-- Humidity -->
+                            <div
+                                class="p-6 rounded-3xl bg-white/5 border border-white/10 text-center weather-card-animate group">
+                                <span
+                                    class="material-symbols-outlined text-blue-400 mb-3 group-hover:scale-110 transition-transform">humidity_mid</span>
+                                <p
+                                    class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">
+                                    Humidity</p>
+                                <p class="text-2xl font-black text-white"><span id="harvest-hum">--</span><span
+                                        class="text-sm opacity-60 ml-0.5">%</span></p>
+                            </div>
+                            <!-- Rain -->
+                            <div
+                                class="p-6 rounded-3xl bg-white/5 border border-white/10 text-center weather-card-animate group">
+                                <span
+                                    class="material-symbols-outlined text-cyan-400 mb-3 group-hover:scale-110 transition-transform">rainy</span>
+                                <p
+                                    class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">
+                                    Precipitation</p>
+                                <p class="text-2xl font-black text-white"><span id="harvest-rain">--</span><span
+                                        class="text-sm opacity-60 ml-0.5">mm</span></p>
+                            </div>
+                            <!-- Prediction (Wind) -->
+                            <div
+                                class="p-6 rounded-3xl bg-white/5 border border-white/10 text-center weather-card-animate group">
+                                <span
+                                    class="material-symbols-outlined text-slate-400 mb-3 group-hover:scale-110 transition-transform">air</span>
+                                <p
+                                    class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">
+                                    Wind Speed</p>
+                                <p class="text-2xl font-black text-white"><span id="harvest-wind">--</span><span
+                                        class="text-sm opacity-60 ml-0.5">km/h</span></p>
+                            </div>
+                            <!-- Air Quality (AQI) -->
+                            <div
+                                class="p-6 rounded-3xl bg-white/5 border border-white/10 text-center weather-card-animate group">
+                                <span
+                                    class="material-symbols-outlined text-green-400 mb-3 group-hover:scale-110 transition-transform">airwave</span>
+                                <p
+                                    class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">
+                                    Air
+                                    Quality (AQI)</p>
+                                <p class="text-2xl font-black text-white"><span id="harvest-aqi">--</span><span
+                                        class="text-sm opacity-60 ml-0.5">μg/m³</span></p>
+                            </div>
+                            <!-- Location/Sync -->
+                            <div class="p-6 rounded-3xl bg-[#A855F7]/10 border border-[#A855F7]/20 text-center weather-card-animate group cursor-pointer"
+                                onclick="initHarvestWeather(true)">
+                                <span
+                                    class="material-symbols-outlined text-[#A855F7] mb-3 group-hover:rotate-180 transition-transform duration-700">sync</span>
+                                <p class="text-[10px] font-black text-[#818CF8] uppercase tracking-widest mb-1">Area
+                                    Sync
+                                </p>
+                                <p class="text-xs font-black text-white mt-1 leading-none truncate" id="harvest-city">
+                                    Detecting...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Insight Footer Strip -->
+                    <div
+                        class="bg-primary/5 px-8 md:px-10 py-4 flex flex-col md:flex-row items-center justify-between gap-4 border-t border-white/5">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-[#A855F7]">psychology</span>
+                            <span class="text-xs font-bold text-on-surface-variant tracking-wide">Harvest Wisdom: <span
+                                    id="harvest-wisdom" class="text-white italic">Synchronizing with localized global
+                                    satellite data...</span></span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <a href="https://www.aqi.in/weather" target="_blank"
+                                class="text-[9px] font-black text-emerald-400/60 hover:text-emerald-400 uppercase tracking-[0.2em] transition-colors flex items-center gap-2">
+                                Source: AQI.in Real-World Dashboard <span
+                                    class="material-symbols-outlined text-[10px]">open_in_new</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 🎯 CROP SELECTION INTERFACE -->
+            <div id="cropSelectionInterface" class="mb-10">
+                <div class="glass-card rounded-2xl p-6 md:p-8 border-primary/20">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-2xl font-bold text-white mb-2">Select Crops for Harvest Analysis</h2>
+                            <p class="text-sm text-on-surface-variant">Choose crops from your active irrigation plans
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-on-surface-variant mb-1">Selected</p>
+                            <p class="text-3xl font-black text-primary"><span id="selectedCropCount">0</span></p>
+                        </div>
+                    </div>
+                    <!-- Crop Slider -->
+                    <div class="smooth-scroll-wrapper">
+                        <div id="cropSelectionGrid"
+                            class="flex gap-4 mb-8 overflow-x-auto hide-scrollbar smooth-horiz-scroll min-w-full pb-4">
+                            <!-- Crop cards will be populated here -->
+                        </div>
+                    </div>
+
+                    <!-- ── BROWSE ALL CROPS (14 IMAGES IN COLLAPSIBLE BOX) ── -->
+                    <div class="relative mb-10">
+                        <!-- Trigger Box -->
+                        <div id="allCropsTrigger" onclick="toggleAllCrops()"
+                            class="glass-card rounded-2xl p-8 border border-emerald-500/40 flex flex-col items-center justify-center cursor-pointer group hover:bg-emerald-500/10 transition-all duration-500 shadow-[0_0_40px_rgba(16,185,129,0.15)] relative overflow-hidden">
+
+                            <!-- Decorative background glow -->
+                            <div
+                                class="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                            </div>
+
+                            <h3
+                                class="text-base font-black uppercase tracking-[0.4em] text-white mb-6 group-hover:text-emerald-400 transition-all duration-500 group-hover:tracking-[0.5em] relative z-10">
+                                Browse All Harvest Strategies
+                            </h3>
+
+                            <div class="flex flex-col items-center gap-3 relative z-10">
+                                <span id="triggerText"
+                                    class="text-[10px] font-black text-emerald-500/80 uppercase tracking-[0.2em] group-hover:text-emerald-400 transition-colors">Click
+                                    to Expand</span>
+
+                                <div
+                                    class="w-14 h-14 rounded-full border-2 border-emerald-500/30 flex items-center justify-center bg-emerald-500/5 group-hover:border-emerald-500/60 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all duration-500 relative">
+                                    <span id="allCropsArrow"
+                                        class="material-symbols-outlined text-emerald-400 text-4xl transition-all duration-500 animate-bounce-slow">expand_more</span>
+                                </div>
+                            </div>
+
+                            <!-- Side indicators for premium feel -->
+                            <div
+                                class="absolute left-4 top-1/2 -translate-y-1/2 w-1 h-8 bg-emerald-500/20 rounded-full group-hover:bg-emerald-500/60 transition-all duration-500">
+                            </div>
+                            <div
+                                class="absolute right-4 top-1/2 -translate-y-1/2 w-1 h-8 bg-emerald-500/20 rounded-full group-hover:bg-emerald-500/60 transition-all duration-500">
+                            </div>
+                        </div>
+
+                        <!-- Collapsible Content -->
+                        <div id="allCropsCollapsible"
+                            class="max-h-0 overflow-hidden transition-all duration-700 ease-in-out">
+                            <div
+                                class="glass-card rounded-2xl p-8 border border-white/10 bg-surface-variant/20 backdrop-blur-3xl shadow-2xl">
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4"
+                                    id="allCropsGrid">
+                                    <!-- Injected by JS -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col md:flex-row gap-4 justify-center">
+                        <button id="viewHarvestBtn" onclick="viewHarvestAnalysis()"
+                            class="flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-primary to-emerald-500 text-black font-bold text-lg hover:shadow-lg hover:shadow-primary/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed pulse-glow"
+                            disabled>
+                            <span class="material-symbols-outlined text-2xl">agriculture</span>
+                            View Harvest Analysis
+                        </button>
+                        <button onclick="selectAllCrops()"
+                            class="flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-white/10 border border-white/20 text-white font-bold hover:bg-white/20 transition-all">
+                            <span class="material-symbols-outlined">select_all</span>
+                            Select All
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🌾 HARVEST ANALYSIS SECTION (Hidden initially) -->
+            <div id="harvestAnalysisSection" class="hidden">
+
+
+                <!-- Multi-Harvest Container -->
+                <div id="harvestContent" class="space-y-16 pb-12">
+                    <!-- Cards will be injected here -->
+                </div>
+
+                <!-- ✨ ANALYZE ANOTHER CROP BUTTON (Permanently Integrated) -->
+                <div class="flex justify-center pt-16 pb-16 border-t border-white/5 mt-16">
+                    <button onclick="backToSelection()"
+                        class="flex items-center justify-center gap-4 bg-primary hover:bg-primary-dim text-black font-black px-12 py-6 rounded-2xl transition-all duration-500 transform hover:scale-[1.05] active:scale-[0.95] shadow-[0_20px_50px_rgba(16,185,129,0.3)] pulse-glow group">
+                        <span
+                            class="material-symbols-outlined text-3xl transition-transform group-hover:rotate-180 duration-700">sync</span>
+                        <span class="text-xl uppercase tracking-[0.15em]">Analyze Another Crop</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- No Crop Warning -->
+            <section class="page-section hidden" id="noCropWarning">
+                <div class="glass-card rounded-2xl p-8 mb-8 text-center border-yellow-500/30 bg-yellow-500/5">
+                    <span class="material-symbols-outlined text-yellow-400 text-5xl mb-4 block">warning</span>
+                    <h3 class="text-xl font-bold text-yellow-400 mb-2">No Active Crops Found</h3>
+                    <p class="text-on-surface-variant mb-4">Please go to Irrigation page and select crops for harvest
+                        planning.
+                    </p>
+                    <a href="/irrigation"
+                        class="inline-block bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-primary/80 transition-all">
+                        Go to Irrigation
+                    </a>
+                </div>
+            </section>
+    </main>
+
+    <!-- FOOTER -->
+    <!-- ══════════════════════════════════════════════════
+     GLOBAL FOOTER
+══════════════════════════════════════════════════ -->
+    <footer class="global-footer relative z-10 lg:ml-64">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Logo"
+                    class="w-full h-full rounded-full object-cover">
+            </div>
+            <h3 class="text-xl font-black text-white mb-4 tracking-tighter">Uyirnilam AI</h3>
+            <p class="footer-description">
+                The future of Intelligent Farming. Empowering sustainable agriculture through AI-driven insights for
+                Harvest, Market, Pest, and Irrigation management.
+            </p>
+
+            <nav class="footer-nav">
+                <a href="/dashboard" class="footer-link">Dashboard</a>
+                <a href="/irrigation" class="footer-link">Irrigation</a>
+                <a href="/harvest" class="footer-link">Harvest</a>
+                <a href="/pest" class="footer-link">Pest Control</a>
+                <a href="/market" class="footer-link">Market</a>
+            </nav>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-bottom">
+                <div class="footer-contact">
+                    <a href="tel:+919112260118" class="contact-item">
+                        <span class="material-symbols-outlined">Call</span>
+                        +91 9112260118
+                    </a>
+                    <a href="mailto:sanjayangounder@gmail.com" class="contact-item">
+                        <span class="material-symbols-outlined">Mail</span>
+                        sanjayangounder@gmail.com
+                    </a>
+                </div>
+
+                <div class="footer-social">
+                    <a href="https://www.linkedin.com/in/sanjayan-sankar-gounder-3b2aa6330" target="_blank"
+                        class="social-icon" aria-label="LinkedIn">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                            <path
+                                d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="founder-credit">Developed by Sanjayan Sankar Gounder</div>
+                <div class="copyright text-on-surface-variant/60">© 2026 Uyirnilam AI. All Rights Reserved.</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 🛠️ DATA HELPERS & STORAGE
+        function storageGet(key) {
+            let v = null;
+            try { v = sessionStorage.getItem(key); } catch (e) { }
+            if (v === null) {
+                try { v = localStorage.getItem(key); } catch (e) { }
+            }
+            return v;
+        }
+
+        function storageSet(key, value) {
+            try { sessionStorage.setItem(key, value); } catch (e) { }
+            try { localStorage.setItem(key, value); } catch (e) { }
+        }
+
+        function normalizeCropName(name) {
+            return (name || '').toString().trim().toLowerCase();
+        }
+
+        function formatCropName(name) {
+            const cleaned = (name || '').toString().trim().toLowerCase();
+            if (!cleaned) return 'Crop';
+            return cleaned.replace(/\b\w/g, (c) => c.toUpperCase());
+        }
+
+        function parsePlantingDate(value) {
+            if (!value) return null;
+            const parsed = new Date(value);
+            return isNaN(parsed.getTime()) ? null : parsed;
+        }
+
+        function defaultPlantingDate() {
+            const d = new Date();
+            d.setDate(d.getDate() - 30);
+            return d;
+        }
+
+        // 🌾 EXPANDED CROP DATABASE (14 CROPS)
+        const cropDatabase = {
+            rice: { name: 'Rice', harvestDays: 120, variety: 'Oryza sativa', image: 'rice.png' },
+            wheat: { name: 'Wheat', harvestDays: 140, variety: 'Triticum aestivum', image: 'wheat.png' },
+            maize: { name: 'Maize', harvestDays: 110, variety: 'Zea mays', image: 'maize.png' },
+            cotton: { name: 'Cotton', harvestDays: 160, variety: 'Gossypium hirsutum', image: 'cotton.png' },
+            sugarcane: { name: 'Sugarcane', harvestDays: 300, variety: 'Saccharum officinarum', image: 'sugarcane.png' },
+            banana: { name: 'Banana', harvestDays: 300, variety: 'Musa', image: 'banana.png' },
+            grapes: { name: 'Grapes', harvestDays: 300, variety: 'Vitis vinifera', image: 'grapes.png' },
+            mango: { name: 'Mango', harvestDays: 150, variety: 'Mangifera indica', image: 'mango.png' },
+            soybean: { name: 'Soybean', harvestDays: 90, variety: 'Glycine max', image: 'soybean.png' },
+            groundnut: { name: 'Groundnut', harvestDays: 120, variety: 'Arachis hypogaea', image: 'groundnut.png' },
+            millet: { name: 'Millet', harvestDays: 80, variety: 'Pennisetum glaucum', image: 'millet.png' },
+            pulses: { name: 'Pulses', harvestDays: 100, variety: 'Leguminosae', image: 'pulses.png' },
+            barley: { name: 'Barley', harvestDays: 110, variety: 'Hordeum vulgare', image: 'barley.jpg' },
+            oats: { name: 'Oats', harvestDays: 120, variety: 'Avena sativa', image: 'oats.png' }
+        };
+
+        const yieldPerAcre = {
+            rice: 45, wheat: 50, maize: 55, corn: 55, cotton: 35,
+            sugarcane: 400, banana: 350, grapes: 200, mango: 150,
+            soybean: 30, groundnut: 25, millet: 20, pulses: 15, barley: 40, oats: 35
+        };
+        let availableCrops = [];
+        let cropLookup = {};
+        let selectedCrops = [];
+        let countdownIntervals = [];
+        let harvestDataList = [];
+
+        // 🚜 INITIALIZATION
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeHarvestPage();
+            renderGlobalCropsGrid();
+        });
+
+        // 🌟 GLOBAL CROP EXPLORER LOGIC
+        function toggleAllCrops() {
+            const container = document.getElementById('allCropsCollapsible');
+            const arrow = document.getElementById('allCropsArrow');
+            const subtext = document.getElementById('triggerText');
+
+            if (container.classList.contains('max-h-0')) {
+                container.classList.remove('max-h-0');
+                container.classList.add('max-h-[2000px]');
+                arrow.classList.add('rotate-180');
+                subtext.innerText = "Click to Hide Matrix";
+            } else {
+                container.classList.add('max-h-0');
+                container.classList.remove('max-h-[2000px]');
+                arrow.classList.remove('rotate-180');
+                subtext.innerText = "Click to Expand Matrix";
+            }
+        }
+
+        function renderGlobalCropsGrid() {
+            const grid = document.getElementById('allCropsGrid');
+            if (!grid) return;
+
+            grid.innerHTML = '';
+            const allKeys = Object.keys(cropDatabase);
+
+            allKeys.forEach((key, index) => {
+                const crop = cropDatabase[key];
+                const imgPath = `/static/images/crop/${crop.image}`;
+                const isSelected = selectedCrops.includes(key);
+
+                const btn = document.createElement('button');
+                btn.onclick = () => viewSpecificCrop(key);
+                btn.style.backgroundImage = `url('${imgPath}')`;
+                btn.style.animationDelay = `${index * 50}ms`;
+                btn.className = `
+                    crop-tab relative rounded-xl p-3 text-center border border-white/10 
+                    hover:border-primary/40 transition-all h-24 flex flex-col items-center 
+                    justify-center group overflow-hidden bg-cover bg-center 
+                    animate-in fade-in zoom-in duration-500 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]
+                    ${isSelected ? 'active-tab' : ''}
+                `;
+
+                btn.innerHTML = `
+                    <div class="relative z-10 w-full px-1">
+                        <p class="text-xs font-black text-white uppercase tracking-[0.1em] drop-shadow-[0_2px_10px_rgba(0,0,0,1)] leading-none group-hover:scale-110 transition-transform">
+                            ${crop.name}
+                        </p>
+                    </div>
+                `;
+                grid.appendChild(btn);
+            });
+        }
+
+        function viewSpecificCrop(key) {
+            // Ensure crop data exists in our local list first
+            if (!cropLookup[key]) {
+                const dbEntry = cropDatabase[key];
+                const plantedDate = new Date();
+                plantedDate.setDate(plantedDate.getDate() - 30); // Default 30 days ago
+
+                const simData = {
+                    key,
+                    name: dbEntry.name,
+                    harvestDays: dbEntry.harvestDays,
+                    plantedDateObj: plantedDate,
+                    landSize: parseFloat(storageGet('landSize')) || 1,
+                    variety: dbEntry.variety,
+                    totalProfit: 0,
+                    image: dbEntry.image
+                };
+                cropLookup[key] = simData;
+                availableCrops.push(simData);
+                renderCropSelectionCards();
+            }
+
+            // Standard multi-selection toggle
+            const index = selectedCrops.indexOf(key);
+            if (index > -1) {
+                selectedCrops.splice(index, 1);
+            } else {
+                selectedCrops.push(key);
+            }
+
+            // Refresh visuals for both the grid and selection cards
+            renderGlobalCropsGrid();
+            renderCropSelectionCards();
+            updateSelectedCount();
+        }
+
+        // 🌦️ PRECISION ATMOSPHERIC SYNC LOGIC
+        async function initHarvestWeather(isManual = false) {
+            const cityEl = document.getElementById('harvest-city');
+            const wisdomEl = document.getElementById('harvest-wisdom');
+            const iconEl = document.getElementById('weatherIcon');
+
+            if (isManual) {
+                iconEl.classList.add('animate-spin');
+                cityEl.innerText = "Syncing...";
+            }
+
+            if (!navigator.geolocation) {
+                fallbackWeather("Geolocation not supported");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    await fetchHarvestWeather(latitude, longitude);
+                    await fetchHarvestCity(latitude, longitude);
+                    if (isManual) iconEl.classList.remove('animate-spin');
+                },
+                (error) => {
+                    console.warn("Geolocation error:", error);
+                    fallbackWeather("Location access denied");
+                    if (isManual) iconEl.classList.remove('animate-spin');
+                }
+            );
+        }
+
+        async function fetchHarvestWeather(lat, lon) {
+            try {
+                // Fetch Weather Data
+                const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,uv_index&timezone=auto`;
+                const weatherRes = await fetch(weatherUrl);
+                const weatherData = await weatherRes.json();
+
+                // Fetch AQI Data (Real-World Atmospheric Network)
+                const aqiUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=us_aqi,pm2_5`;
+                const aqiRes = await fetch(aqiUrl);
+                const aqiData = await aqiRes.json();
+
+                updateHarvestWeatherUI(weatherData.current, aqiData.current);
+            } catch (err) {
+                console.error("Weather Fetch Error:", err);
+                fallbackWeather("API Connection Error");
+            }
+        }
+
+        async function fetchHarvestCity(lat, lon) {
+            try {
+                const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`;
+                const response = await fetch(url);
+                const data = await response.json();
+                const city = data.address.city || data.address.town || data.address.village || "Your Area";
+                const state = data.address.state || "Your State";
+                document.getElementById('harvest-city').innerText = `${city}, ${state}`;
+            } catch (err) {
+                document.getElementById('harvest-city').innerText = "Active Farm";
+            }
+        }
+
+        function updateHarvestWeatherUI(current, aqi) {
+            const temp = current.temperature_2m;
+            const hum = current.relative_humidity_2m;
+            const rain = current.precipitation;
+            const wind = current.wind_speed_10m;
+            const aqiVal = aqi.us_aqi;
+
+            document.getElementById('harvest-temp').innerText = temp.toFixed(1);
+            document.getElementById('harvest-hum').innerText = Math.round(hum);
+            document.getElementById('harvest-rain').innerText = rain.toFixed(1);
+            document.getElementById('harvest-wind').innerText = wind.toFixed(1);
+            document.getElementById('harvest-aqi').innerText = Math.round(aqiVal);
+
+            // 🧠 HARVEST WISDOM AI LOGIC
+            const wisdomEl = document.getElementById('harvest-wisdom');
+            const statusEl = document.getElementById('harvest-weather-status');
+
+            if (rain > 1) {
+                wisdomEl.innerHTML = `<span class="text-cyan-400">Rainfall Alert:</span> Harvesting in wet conditions increases moisture-spoilage risk. Recommend waiting 48h for dry ground.`;
+                statusEl.innerHTML = `<span class="material-symbols-outlined text-cyan-400">cloud_off</span><span class="text-sm font-black text-white uppercase tracking-widest">Delay Harvest - Wet Weather</span>`;
+                statusEl.className = "px-6 py-3 bg-cyan-500/10 border border-cyan-500/20 rounded-2xl flex items-center gap-3";
+            } else if (aqiVal > 150) {
+                wisdomEl.innerHTML = `<span class="text-red-400">Poor Air Quality:</span> High pollutant levels detected (${aqiVal} AQI). Ensure field workers use protective gear and limit heavy exertion.`;
+                statusEl.innerHTML = `<span class="material-symbols-outlined text-red-400">masks</span><span class="text-sm font-black text-white uppercase tracking-widest">Air Quality Warning</span>`;
+                statusEl.className = "px-6 py-3 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center gap-3";
+            } else if (temp > 35) {
+                wisdomEl.innerHTML = `<span class="text-orange-400">Heat Advisory:</span> High temperatures detected. Harvest early (4 AM - 9 AM) to preserve crop vitality and nutrient profile.`;
+                statusEl.innerHTML = `<span class="material-symbols-outlined text-orange-400">wb_sunny</span><span class="text-sm font-black text-white uppercase tracking-widest">Heat Stress Window</span>`;
+                statusEl.className = "px-6 py-3 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center gap-3";
+            } else {
+                wisdomEl.innerHTML = `Conditions are <span class="text-emerald-400">Optimal</span>. High atmospheric stability detected. Proceed with your selected harvest strategy for peak yield.`;
+                statusEl.innerHTML = `<span class="material-symbols-outlined text-emerald-400">check_circle</span><span class="text-sm font-black text-white uppercase tracking-widest">Optimal Harvest Window</span>`;
+                statusEl.className = "px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center gap-3";
+            }
+        }
+
+        function fallbackWeather(reason) {
+            document.getElementById('harvest-city').innerText = reason;
+            document.getElementById('harvest-wisdom').innerText = "Unable to sync live data. Please check connection or allow location manually.";
+        }
+
+        function initializeHarvestPage() {
+            initHarvestWeather();
+            buildAvailableCrops();
+
+            // 🌾 ALWAYS SHOW SELECTION IF GLOBAL EXPLORER IS AVAILABLE
+            document.getElementById('cropSelectionInterface').classList.remove('hidden');
+
+            if (availableCrops.length === 0) {
+                // If no recommendations, we show a subtle hint but keep the 14-crop grid accessible
+                const grid = document.getElementById('cropSelectionGrid');
+                if (grid) grid.innerHTML = `
+                    <div class="col-span-full p-8 text-center bg-white/5 rounded-2xl border border-white/5">
+                        <p class="text-sm text-on-surface-variant font-bold italic">No active irrigation plans found. Use the Global Explorer below to analyze any crop.</p>
+                    </div>
+                `;
+            }
+
+            // Sync from Irrigation page if available
+            const syncCrops = storageGet('selected_irrigation_crops');
+            if (syncCrops) {
+                try {
+                    const irrigationCrops = JSON.parse(syncCrops);
+                    if (Array.isArray(irrigationCrops) && irrigationCrops.length > 0) {
+                        // Pre-select these crops
+                        selectedCrops = irrigationCrops.map(name => normalizeCropName(name)).filter(key => cropLookup[key]);
+
+                        // Clear the sync storage so it doesn't always override manual changes on refresh
+                        // Actually, let's keep it but trigger only if no manual selection is active yet
+                    }
+                } catch (e) { console.error('Sync error:', e); }
+            }
+
+            renderCropSelectionCards();
+            updateSelectedCount();
+
+            // Auto-trigger analysis if we have pre-selected crops from irrigation
+            if (selectedCrops.length > 0) {
+                console.log("Harvest: Auto-triggering analysis for sync crops:", selectedCrops);
+                setTimeout(() => {
+                    if (selectedCrops.length > 0) {
+                        viewHarvestAnalysis();
+                    }
+                }, 1000); // 1-second delay for smooth entry
+            }
+        }
+
+        function buildAvailableCrops() {
+            availableCrops = [];
+            cropLookup = {};
+
+            // Get from active irrigation plans
+            const activePlansStr = storageGet('activePlans');
+            if (activePlansStr) {
+                try {
+                    const plans = JSON.parse(activePlansStr);
+                    plans.forEach(crop => addCropToAvailable(crop));
+                } catch (e) {
+                    console.warn('Invalid active plans in storage');
+                }
+            }
+
+            // Fallback: Check recommended crops
+            if (availableCrops.length === 0) {
+                const recommendedStr = storageGet('recommendedCrops');
+                if (recommendedStr) {
+                    try {
+                        const recommended = JSON.parse(recommendedStr);
+                        recommended.forEach(crop => addCropToAvailable(crop));
+                    } catch (e) { }
+                }
+            }
+        }
+
+        function addCropToAvailable(raw) {
+            const key = normalizeCropName(raw.name);
+            if (!key || cropLookup[key]) return;
+
+            const fallback = cropDatabase[key] || {};
+            const plantedDateObj = parsePlantingDate(raw.plantedDate) ||
+                parsePlantingDate(storageGet('plantingDate')) ||
+                defaultPlantingDate();
+
+            const cropData = {
+                key,
+                name: formatCropName(raw.name || key),
+                harvestDays: Number(raw.harvestDays || raw.growthDays) || fallback.harvestDays || 120,
+                plantedDateObj,
+                landSize: parseFloat(raw.landSize) || parseFloat(storageGet('landSize')) || 1,
+                variety: raw.variety || fallback.variety || 'Standard Variety',
+                totalProfit: Number(raw.totalProfit) || 0,
+                image: raw.image || fallback.image || `${key}.jpg`
+            };
+
+            cropLookup[key] = cropData;
+            availableCrops.push(cropData);
+        }
+
+        // 🎨 CROP SELECTION UI
+        function renderCropSelectionCards() {
+            const grid = document.getElementById('cropSelectionGrid');
+            if (!grid) return;
+
+            grid.innerHTML = '';
+
+            availableCrops.forEach((crop, index) => {
+                const card = createCropSelectionCard(crop, index);
+                grid.appendChild(card);
+            });
+        }
+
+        function createCropSelectionCard(crop, index) {
+            const card = document.createElement('div');
+            const imagePath = `/static/images/crop/${crop.image}`;
+            const isSelected = selectedCrops.includes(crop.key);
+            card.className = `crop-selection-card glass-card rounded-2xl p-6 border border-white/10 w-[350px] shrink-0 ${isSelected ? 'selected' : ''}`;
+            card.setAttribute('data-crop-key', crop.key);
+            card.onclick = () => toggleCropSelection(crop.key);
+
+            card.innerHTML = `
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-20 h-20 rounded-xl overflow-hidden border-2 border-primary/30">
+                        <img src="${imagePath}" 
+                             alt="${crop.name}"
+                             class="w-full h-full object-cover"
+                             onerror="this.src='https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=200'">
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-xl font-bold text-white mb-1">${crop.name}</h3>
+                        <p class="text-xs text-on-surface-variant">${crop.variety}</p>
+                        <div class="star-rating mt-2">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <div class="p-2 rounded-lg bg-white/5">
+                        <p class="text-xs text-on-surface-variant">Land Size</p>
+                        <p class="font-bold text-white">${crop.landSize} acres</p>
+                    </div>
+                    <div class="p-2 rounded-lg bg-white/5">
+                        <p class="text-xs text-on-surface-variant">Growth Days</p>
+                        <p class="font-bold text-white">${crop.harvestDays} days</p>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function toggleCropSelection(cropKey) {
+            const card = document.querySelector(`[data-crop-key="${cropKey}"]`);
+            if (!card) return;
+
+            const index = selectedCrops.indexOf(cropKey);
+            if (index > -1) {
+                selectedCrops.splice(index, 1);
+                card.classList.remove('selected');
+            } else {
+                selectedCrops.push(cropKey);
+                card.classList.add('selected');
+                // Sync primary selection globally for cross-page state
+                if (typeof window.syncActiveCrop === 'function') {
+                    window.syncActiveCrop(cropKey, cropKey.charAt(0).toUpperCase() + cropKey.slice(1));
+                }
+            }
+
+            updateSelectedCount();
+        }
+
+        function selectAllCrops() {
+            selectedCrops = availableCrops.map(c => c.key);
+            document.querySelectorAll('.crop-selection-card').forEach(card => {
+                card.classList.add('selected');
+            });
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const countEl = document.getElementById('selectedCropCount');
+            const viewBtn = document.getElementById('viewHarvestBtn');
+
+            if (countEl) {
+                countEl.textContent = selectedCrops.length;
+            }
+
+            if (viewBtn) {
+                viewBtn.disabled = selectedCrops.length === 0;
+            }
+        }
+
+        // 🎯 VIEW HARVEST ANALYSIS
+        function viewHarvestAnalysis() {
+            if (selectedCrops.length === 0) {
+                alert('Please select at least one crop!');
+                return;
+            }
+
+            // Sync the primary crop (first selected) for cross-page state
+            if (selectedCrops.length > 0 && typeof window.syncActiveCrop === 'function') {
+                const primaryCrop = selectedCrops[0];
+                window.syncActiveCrop(primaryCrop, primaryCrop.charAt(0).toUpperCase() + primaryCrop.slice(1));
+            }
+
+            try {
+                // Pre-render the harvest cards so they are ready
+                renderAllHarvestCrops();
+
+                // Check if we actually rendered anything before jumping
+                const container = document.getElementById('harvestContent');
+                if (!container || container.children.length === 0) {
+                    console.warn("Harvest: Failed to render any analysis cards.");
+                    // Don't hide the selection if rendering failed
+                    return;
+                }
+
+                // Smoothly transition between interfaces
+                document.getElementById('cropSelectionInterface').classList.add('hidden');
+                document.getElementById('harvestAnalysisSection').classList.remove('hidden');
+
+                // Smooth scroll to the top of analysis
+                setTimeout(() => {
+                    document.getElementById('harvestAnalysisSection').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 100);
+
+            } catch (error) {
+                console.error("Harvest: Analysis Error -", error);
+                alert("AI Analysis Engine encountered an error. Please try again.");
+                document.getElementById('cropSelectionInterface').classList.remove('hidden');
+            }
+        }
+
+        function backToSelection() {
+            document.getElementById('harvestAnalysisSection').classList.add('hidden');
+            document.getElementById('cropSelectionInterface').classList.remove('hidden');
+
+            // Clear countdowns
+            countdownIntervals.forEach(clearInterval);
+            countdownIntervals = [];
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 🕒 TIMER PERSISTENCE SYSTEM
+        let harvestTimers = {};
+
+        function loadTimers() {
+            try {
+                const stored = localStorage.getItem('harvestTimers');
+                harvestTimers = stored ? JSON.parse(stored) : {};
+            } catch (e) {
+                console.error("Error loading timers:", e);
+                harvestTimers = {};
+            }
+        }
+
+        function saveTimers() {
+            localStorage.setItem('harvestTimers', JSON.stringify(harvestTimers));
+        }
+
+        function startTimer(cropKey, durationDays) {
+            loadTimers();
+            if (harvestTimers[cropKey]) {
+                if (!confirm(`Timer for ${cropKey.toUpperCase()} is already running. Restart it?`)) return;
+            }
+
+            harvestTimers[cropKey] = {
+                startTime: Date.now(),
+                durationDays: durationDays,
+                notified75: false,
+                notified100: false
+            };
+            saveTimers();
+            renderAllHarvestCrops(); // Refresh UI
+            alert(`🌱 Harvest timer started for ${cropKey.toUpperCase()}!\nDuration: ${durationDays} days.`);
+        }
+
+        function resetTimer(cropKey) {
+            if (confirm(`Are you sure you want to reset the timer for ${cropKey}?`)) {
+                loadTimers();
+                delete harvestTimers[cropKey];
+                saveTimers();
+                renderAllHarvestCrops();
+            }
+        }
+
+        // 🎨 HARVEST CARDS RENDERING
+        function renderAllHarvestCrops() {
+            loadTimers();
+            const container = document.getElementById('harvestContent');
+            if (!container) return;
+
+            container.innerHTML = '';
+
+            countdownIntervals.forEach(clearInterval);
+            countdownIntervals = [];
+            harvestDataList = [];
+
+            const selectedCropData = selectedCrops.map(key => cropLookup[key]).filter(c => c);
+
+            selectedCropData.forEach((crop, index) => {
+                const timerData = harvestTimers[crop.key];
+                const card = createHarvestCard(crop, index, timerData);
+                container.appendChild(card);
+
+                if (timerData) {
+                    const harvestDate = new Date(timerData.startTime + (timerData.durationDays * 24 * 60 * 60 * 1000));
+
+                    const cropEntry = {
+                        index,
+                        cropKey: crop.key,
+                        startTime: timerData.startTime,
+                        harvestDate: harvestDate,
+                        harvestDays: timerData.durationDays
+                    };
+                    harvestDataList.push(cropEntry);
+                    updateCardCountdown(cropEntry);
+                }
+
+                setTimeout(() => {
+                    initHarvestCharts(index, crop);
+                }, 100 * index);
+            });
+
+            if (harvestDataList.length > 0) {
+                const interval = setInterval(() => {
+                    harvestDataList.forEach(updateCardCountdown);
+                }, 1000);
+                countdownIntervals.push(interval);
+            }
+        }
+
+        function createHarvestCard(crop, index, timerData) {
+            const cardWrapper = document.createElement('div');
+            cardWrapper.className = 'harvest-card-reveal';
+            cardWrapper.style.animationDelay = `${index * 0.1}s`;
+
+            const perAcre = yieldPerAcre[crop.key] || 40;
+            const totalYield = Math.round(perAcre * crop.landSize);
+            const marketValue = crop.totalProfit > 0 ? Math.round(crop.totalProfit) : (totalYield * 5500);
+
+            let progress = 0;
+            let statusClass = 'bg-white/5 text-on-surface-variant';
+            let statusText = 'Not Started';
+            let statusIcon = 'pause_circle';
+            let plantedDateStr = 'Waiting...';
+
+            if (timerData) {
+                const now = Date.now();
+                const totalMs = timerData.durationDays * 24 * 60 * 60 * 1000;
+                const elapsedMs = now - timerData.startTime;
+                progress = Math.min(100, Math.max(0, Math.round((elapsedMs / totalMs) * 100)));
+                plantedDateStr = new Date(timerData.startTime).toLocaleDateString('en-IN');
+
+                if (progress >= 90) {
+                    statusClass = 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400 readiness-pulse';
+                    statusText = 'Ready to Harvest!';
+                    statusIcon = 'check_circle';
+                } else if (progress >= 70) {
+                    statusClass = 'bg-yellow-500/20 border-yellow-500/30 text-yellow-400';
+                    statusText = 'Maturing Stage';
+                    statusIcon = 'pending';
+                } else if (progress >= 40) {
+                    statusClass = 'bg-orange-500/20 border-orange-500/30 text-orange-400';
+                    statusText = 'Mid Growth';
+                    statusIcon = 'agriculture';
+                } else {
+                    statusClass = 'bg-blue-500/20 border-blue-500/30 text-blue-400';
+                    statusText = 'Early Growth';
+                    statusIcon = 'spa';
+                }
+            }
+
+            cardWrapper.innerHTML = `
+                <div class="relative mb-6 flex items-center gap-4">
+                    <div class="px-4 py-1 rounded-full bg-primary/20 border border-primary/30 text-primary text-[10px] font-black uppercase tracking-widest">
+                        ${crop.name} • Analysis #${index + 1}
+                    </div>
+                    <div class="h-px flex-1 bg-white/5"></div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- LEFT COLUMN -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <!-- Crop Info Card -->
+                        <div class="glass-card rounded-2xl p-6 border-primary/20 bg-primary/5 pulse-glow">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-20 h-20 rounded-xl overflow-hidden border-2 border-primary shadow-lg">
+                                    <img src="/static/images/crop/${crop.image}" 
+                                         alt="${crop.name}"
+                                         class="w-full h-full object-cover"
+                                         onerror="this.src='https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=200'">
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-black text-white tracking-tight">${crop.name.toUpperCase()}</h3>
+                                    <p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">${crop.variety}</p>
+                                </div>
+                            </div>
+                            
+                             <!-- Readiness Badge -->
+                             <div class="p-4 rounded-xl ${statusClass} mb-4 flex items-center gap-3">
+                                 <span class="material-symbols-outlined text-3xl">${statusIcon}</span>
+                                 <div>
+                                     <p class="text-xs font-bold uppercase tracking-wider">Status</p>
+                                     <p class="text-lg font-black">${statusText}</p>
+                                 </div>
+                             </div>
+ 
+                             <!-- Key Dates -->
+                             <div class="space-y-3">
+                                 <div class="p-3 rounded-xl bg-white/5 flex justify-between items-center">
+                                     <span class="text-[9px] font-black text-on-surface-variant uppercase tracking-widest">Planted</span>
+                                     <span class="text-sm font-bold text-white">${plantedDateStr}</span>
+                                 </div>
+                                 <div class="p-3 rounded-xl bg-white/5 flex justify-between items-center">
+                                     <span class="text-[9px] font-black text-on-surface-variant uppercase tracking-widest">Expected Harvest</span>
+                                     <span class="text-sm font-bold text-emerald-400" id="hDate_${index}">--</span>
+                                 </div>
+                                <div class="p-3 rounded-xl bg-white/5 border border-emerald-500/20">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Maturity Progress</span>
+                                        <span class="text-xs font-black text-white" id="progressVal_${index}">${progress}%</span>
+                                    </div>
+                                    <div class="h-2 w-full bg-white/10 rounded-full overflow-hidden progress-shimmer">
+                                        <div id="progressBar_${index}" class="h-full bg-gradient-to-r from-emerald-500 to-green-400 transition-all duration-1000" style="width: ${progress}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Financial Summary -->
+                        <div class="glass-card rounded-2xl p-6 border-emerald-500/10">
+                            <h4 class="text-sm font-bold text-white mb-4 uppercase tracking-wider">Financial Projection</h4>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+                                    <span class="material-symbols-outlined text-emerald-400 text-2xl block mb-2">grass</span>
+                                    <p class="text-xs text-on-surface-variant mb-1">Est. Yield</p>
+                                    <p class="text-lg font-bold text-white">${totalYield.toLocaleString()} Qtl</p>
+                                </div>
+                                <div class="p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20 text-center">
+                                    <span class="material-symbols-outlined text-yellow-400 text-2xl block mb-2">payments</span>
+                                    <p class="text-xs text-on-surface-variant mb-1">Market Value</p>
+                                    <p class="text-lg font-bold text-emerald-400">₹${marketValue.toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                         <!-- Quick Actions -->
+                         <div class="glass-card rounded-2xl p-4 border-white/5">
+                             <div class="space-y-2">
+                                 ${!timerData ? `
+                                     <button onclick="startTimer('${crop.key}', ${crop.harvestDays || 120})" class="w-full flex items-center justify-center gap-3 p-4 rounded-xl bg-gradient-to-r from-emerald-500 to-green-400 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:scale-[1.02] active:scale-[0.98] transition-all">
+                                         <span class="material-symbols-outlined font-black">play_arrow</span>
+                                         <span class="text-sm font-black uppercase tracking-widest">Start Harvest Timer</span>
+                                     </button>
+                                 ` : `
+                                     <button onclick="resetTimer('${crop.key}')" class="w-full flex items-center justify-center gap-3 p-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-500 transition-all">
+                                         <span class="material-symbols-outlined">restart_alt</span>
+                                         <span class="text-sm font-bold">Reset Timer</span>
+                                     </button>
+                                 `}
+                                 <button onclick="setHarvestReminder('${crop.name}')" class="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-on-surface-variant transition-all">
+                                     <span class="material-symbols-outlined text-sm">notifications</span>
+                                     <span class="text-xs font-bold">Set Reminder</span>
+                                 </button>
+                             </div>
+                         </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN -->
+                    <div class="lg:col-span-8 space-y-6">
+                        <!-- Countdown Timer -->
+                        <div class="glass-card rounded-2xl p-8 bg-gradient-to-br from-primary/5 to-transparent relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-4 opacity-5">
+                                <span class="material-symbols-outlined text-9xl">hourglass_empty</span>
+                            </div>
+                            <h4 class="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.3em] mb-8 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">schedule</span>
+                                Time to Harvest
+                            </h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div class="p-6 rounded-2xl bg-white/5 border border-white/5 text-center">
+                                    <div class="countdown-digit text-emerald-400 mb-2" id="days_${index}">00</div>
+                                    <p class="text-[9px] font-black text-on-surface-variant uppercase tracking-widest">Days</p>
+                                </div>
+                                <div class="p-6 rounded-2xl bg-white/5 border border-white/5 text-center">
+                                    <div class="countdown-digit text-green-400 mb-2" id="hours_${index}">00</div>
+                                    <p class="text-[9px] font-black text-on-surface-variant uppercase tracking-widest">Hours</p>
+                                </div>
+                                <div class="p-6 rounded-2xl bg-white/5 border border-white/5 text-center">
+                                    <div class="countdown-digit text-lime-400 mb-2" id="mins_${index}">00</div>
+                                    <p class="text-[9px] font-black text-on-surface-variant uppercase tracking-widest">Mins</p>
+                                </div>
+                                <div class="p-6 rounded-2xl bg-white/5 border border-white/5 text-center">
+                                    <div class="countdown-digit text-cyan-400 mb-2" id="secs_${index}">00</div>
+                                    <p class="text-[9px] font-black text-on-surface-variant uppercase tracking-widest">Secs</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts Row -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="glass-card rounded-2xl p-6 border-white/5 chart-container">
+                                <h4 class="text-[10px] font-black text-white uppercase tracking-widest mb-6">Revenue Forecast</h4>
+                                <div class="h-[180px]">
+                                    <canvas id="financialChart_${index}"></canvas>
+                                </div>
+                            </div>
+                            <div class="glass-card rounded-2xl p-6 border-white/5 chart-container" style="animation-delay: 0.2s">
+                                <h4 class="text-[10px] font-black text-white uppercase tracking-widest mb-6">ROI Distribution</h4>
+                                <div class="h-[180px]">
+                                    <canvas id="roiChart_${index}"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Growth Timeline -->
+                        <div class="glass-card rounded-2xl p-6 border-white/5">
+                            <h4 class="text-[10px] font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-primary">timeline</span>
+                                Growth Phasing
+                            </h4>
+                            <div class="relative space-y-8 pl-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-white/5">
+                                ${renderTimelineSteps(crop, progress)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return cardWrapper;
+        }
+
+        function renderTimelineSteps(crop, currentProgress) {
+            const stages = [
+                { name: 'Germination & Initial Growth', icon: 'seedling', duration: 0, end: 20 },
+                { name: 'Vegetative Development', icon: 'spa', duration: 20, end: 50 },
+                { name: 'Flowering & Fruiting', icon: 'psychiatry', duration: 50, end: 80 },
+                { name: 'Final Maturation', icon: 'potted_plant', duration: 80, end: 100 }
+            ];
+
+            return stages.map((stage, i) => {
+                const isActive = currentProgress >= stage.duration;
+                const isCompleted = currentProgress > stage.end;
+
+                return `
+                    <div class="relative flex items-center gap-6">
+                        <div class="absolute -left-[30px] w-6 h-6 rounded-full ${isCompleted ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.6)]' : isActive ? 'bg-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.6)]' : 'bg-white/10'} border-4 border-surface z-10 flex items-center justify-center transition-all">
+                            ${isCompleted ? '<span class="material-symbols-outlined text-[10px] text-black font-black">check</span>' : ''}
+                        </div>
+                        <div class="flex items-center gap-4 flex-1">
+                            <span class="material-symbols-outlined ${isActive ? 'text-emerald-400' : 'text-on-surface-variant'} text-xl transition-colors">${stage.icon}</span>
+                            <div class="flex-1">
+                                <p class="text-[11px] font-black ${isActive ? 'text-white' : 'text-on-surface-variant'} uppercase tracking-widest">${stage.name}</p>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <div class="flex-1 h-1 bg-white/10 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-emerald-500 to-green-400 transition-all duration-1000" 
+                                             style="width: ${isActive ? Math.min(100, ((currentProgress - stage.duration) / (stage.end - stage.duration)) * 100) : 0}%"></div>
+                                    </div>
+                                    <span class="text-[9px] text-on-surface-variant font-bold">${isActive ? Math.min(100, Math.round(((currentProgress - stage.duration) / (stage.end - stage.duration)) * 100)) : 0}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function initHarvestCharts(index, crop) {
+            try {
+                const finCtx = document.getElementById(`financialChart_${index}`)?.getContext('2d');
+                const roiCtx = document.getElementById(`roiChart_${index}`)?.getContext('2d');
+
+                // 📊 1. DATA DERIVATION & REALISM
+                const yieldPerAcre = { rice: 25, wheat: 20, maize: 30, cotton: 12, sugarcane: 350, tomato: 150, ginger: 80 };
+                const basePricePerUnit = { rice: 2350, wheat: 2275, maize: 2090, cotton: 7000, sugarcane: 315, tomato: 1200, ginger: 4500 };
+
+                const cropKey = (crop.key || '').toLowerCase();
+                const estYield = (yieldPerAcre[cropKey] || 25) * (crop.landSize || 1);
+                const estPrice = basePricePerUnit[cropKey] || 2500;
+                const totalValue = crop.totalProfit > 0 ? crop.totalProfit : Math.round(estYield * estPrice);
+
+                const investment = Math.round(totalValue * 0.4);
+                const netProfit = totalValue - investment;
+
+                const totalDays = crop.harvestDays || 120;
+                const totalWeeks = Math.ceil(totalDays / 7);
+
+                // 🧬 2. CROP SIGNATURE (FOR UNIQUE GRAPHS)
+                const seed = (crop.name || 'crop').split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                const growthSteepness = 7 + (seed % 6); // k: 7 to 12
+                const growthMidpoint = 0.4 + (seed % 25) / 100; // x0: 0.4 to 0.65
+
+                // 📉 3. SIGMOID REVENUE GROWTH MODEL
+                let labels = [];
+                let revenueData = [];
+                const steps = 10; // 10 data points for smooth interpolation
+
+                for (let i = 0; i <= steps; i++) {
+                    const progress = i / steps;
+                    const sigmoid = 1 / (1 + Math.exp(-growthSteepness * (progress - growthMidpoint)));
+
+                    // Normalize so it starts at 0 and ends at 1
+                    const s0 = 1 / (1 + Math.exp(growthSteepness * growthMidpoint));
+                    const s1 = 1 / (1 + Math.exp(-growthSteepness * (1 - growthMidpoint)));
+                    const normalized = (sigmoid - s0) / (s1 - s0);
+
+                    revenueData.push(Math.round(totalValue * Math.max(0, normalized)));
+
+                    if (i === steps) labels.push('Harvest');
+                    else if (i === 0) labels.push('Planting');
+                    else labels.push(`Wk ${Math.round(progress * totalWeeks)}`);
+                }
+
+                if (finCtx) {
+                    const gradient = finCtx.createLinearGradient(0, 0, 0, 200);
+                    gradient.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+                    gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
+
+                    new Chart(finCtx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Revenue Expected',
+                                data: revenueData,
+                                borderColor: '#10b981',
+                                borderWidth: 3,
+                                backgroundColor: gradient,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 0,
+                                pointHitRadius: 20
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: 'rgba(2, 15, 12, 0.95)',
+                                    callbacks: { label: (ctx) => ` ₹${ctx.parsed.y.toLocaleString()}` }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    grid: { color: 'rgba(255,255,255,0.03)' },
+                                    ticks: {
+                                        color: 'rgba(255,255,255,0.4)',
+                                        font: { size: 9 },
+                                        callback: (v) => '₹' + (v >= 1000 ? (v / 1000).toFixed(0) + 'k' : v)
+                                    }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { color: 'rgba(255,255,255,0.4)', font: { size: 8 } }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                if (roiCtx) {
+                    new Chart(roiCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Total Investment', 'Net Revenue Potential'],
+                            datasets: [{
+                                data: [investment, netProfit],
+                                backgroundColor: ['rgba(255, 255, 255, 0.08)', '#10b981'],
+                                borderWidth: 0,
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '75%',
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        color: 'rgba(255,255,255,0.5)',
+                                        font: { size: 9, weight: 'bold' },
+                                        padding: 15,
+                                        usePointStyle: true
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(2, 15, 12, 0.95)',
+                                    callbacks: { label: (ctx) => ` ${ctx.label}: ₹${ctx.parsed.toLocaleString()}` }
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error("Chart error:", err);
+            }
+        }
+        function updateCardCountdown(data) {
+            const now = Date.now();
+            const totalMs = data.harvestDays * 24 * 60 * 60 * 1000;
+            const elapsedMs = now - data.startTime;
+            let diff = totalMs - elapsedMs;
+            if (diff < 0) diff = 0;
+
+            const progress = Math.min(100, Math.max(0, Math.round((elapsedMs / totalMs) * 100)));
+
+            const dayMs = 24 * 60 * 60 * 1000;
+            const hourMs = 60 * 60 * 1000;
+            const minuteMs = 60 * 1000;
+
+            const days = Math.floor(diff / dayMs);
+            const hours = Math.floor((diff % dayMs) / hourMs);
+            const minutes = Math.floor((diff % hourMs) / minuteMs);
+            const seconds = Math.floor((diff % minuteMs) / 1000);
+
+            const prefix = data.index;
+
+            // Update Countdown Digits
+            const daysEl = document.getElementById(`days_${prefix}`);
+            const hoursEl = document.getElementById(`hours_${prefix}`);
+            const minsEl = document.getElementById(`mins_${prefix}`);
+            const secsEl = document.getElementById(`secs_${prefix}`);
+
+            if (daysEl) daysEl.textContent = String(days).padStart(2, '0');
+            if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+            if (minsEl) minsEl.textContent = String(minutes).padStart(2, '0');
+            if (secsEl) secsEl.textContent = String(seconds).padStart(2, '0');
+
+            // Update Dates & Progress
+            const hDateEl = document.getElementById(`hDate_${prefix}`);
+            if (hDateEl) hDateEl.textContent = data.harvestDate.toLocaleDateString('en-IN');
+
+            const progressValEl = document.getElementById(`progressVal_${prefix}`);
+            const progressBarEl = document.getElementById(`progressBar_${prefix}`);
+            if (progressValEl) progressValEl.textContent = `${progress}%`;
+            if (progressBarEl) progressBarEl.style.width = `${progress}%`;
+
+            // Reminder Notifications (75% and 100%)
+            // NOTE: We rely on a flag in the temp object to avoid repeated alerts in a single session
+            try {
+                const stored = localStorage.getItem('harvestTimers');
+                const timers = stored ? JSON.parse(stored) : {};
+                const currentTimer = timers[data.cropKey];
+
+                if (currentTimer) {
+                    if (progress >= 75 && !currentTimer.notified75) {
+                        alert(`🌾 Alert: ${data.cropKey.toUpperCase()} is nearing harvest stage (75% reached)`);
+                        currentTimer.notified75 = true;
+                        localStorage.setItem('harvestTimers', JSON.stringify(timers));
+                    }
+                    if (progress >= 100 && !currentTimer.notified100) {
+                        alert(`✅ Ready to Harvest: ${data.cropKey.toUpperCase()} has reached 100% maturity!`);
+                        currentTimer.notified100 = true;
+                        localStorage.setItem('harvestTimers', JSON.stringify(timers));
+                    }
+                }
+            } catch (e) { }
+        }
+
+        // Helper Functions
+        function setHarvestReminder(cropName) {
+            alert(`✅ Reminder set for ${cropName} harvest!\n\nYou'll receive notifications 1 week, 3 days, and 1 day before harvest date.`);
+        }
+
+        function downloadReport(cropName) {
+            generatePDF('Harvest Report - ' + cropName, 'main-content');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('mainSidebar')?.classList.toggle('hidden');
+            document.getElementById('sidebarBackdrop')?.classList.toggle('hidden');
+        }
+
+        function navTo(path) {
+            window.location.href = path;
+        }
+
+        // Update sidebar active state
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.sidebar-item-premium').forEach(item => {
+                const onclick = item.getAttribute('onclick');
+                if (onclick && onclick.includes(currentPath)) {
+                    item.classList.remove('sidebar-item-inactive');
+                    item.classList.add('sidebar-cylindrical-highlight', 'text-emerald-400');
+                } else {
+                    item.classList.add('sidebar-item-inactive');
+                    item.classList.remove('sidebar-cylindrical-highlight', 'text-emerald-400');
+                }
+            });
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/nav-enhanced.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/smooth-scroll-enhancer.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initSmoothScroll('#cropSelectionGrid', {
+                scrollSpeed: 4,
+                acceleration: 1.5,
+                hoverZoneWidth: 0.15
+            });
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/uy_header.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pdfGenerator.js') }}?v=1.2"></script>
+</body>
+
+</html>

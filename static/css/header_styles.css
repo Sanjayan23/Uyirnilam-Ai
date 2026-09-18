@@ -1,0 +1,590 @@
+/* ══════════════════════════════════════════════════════════════
+   UYIRNILAM AI — GLOBAL HEADER STYLES  (Premium Redesign v2)
+   Scoped with .uy- prefix — zero bleed into page layout.
+══════════════════════════════════════════════════════════════ */
+
+/* ── Keyframe Animations ──────────────────────────────────────── */
+@keyframes uyGlowPulse {
+    0%, 100% { opacity: 0.30; }
+    50%       { opacity: 0.55; }
+}
+
+@keyframes uyShimmerSlide {
+    0%   { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+}
+
+@keyframes uyDropIn {
+    from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+@keyframes uyBadgePop {
+    0%   { transform: scale(0); }
+    70%  { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@keyframes uyBellRinging {
+    0%, 100% { transform: rotate(0); }
+    10%, 30%, 50%, 70%, 90% { transform: rotate(-8deg); }
+    20%, 40%, 60%, 80% { transform: rotate(8deg); }
+}
+
+/* ── Base Header ──────────────────────────────────────────────── */
+.uy-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    height: 88px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 0 32px;
+
+    /* Premium layered background */
+    background:
+        radial-gradient(ellipse 60% 120% at 0% 50%,  rgba(16, 185, 129, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 100% at 100% 50%, rgba(232, 195, 81, 0.07)  0%, transparent 55%),
+        linear-gradient(135deg, rgba(4, 28, 23, 0.97) 0%, rgba(2, 15, 12, 0.99) 60%, rgba(3, 20, 16, 0.98) 100%);
+
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+
+    /* Glowing bottom border */
+    border-bottom: 1px solid rgba(16, 185, 129, 0.18);
+    box-shadow:
+        0 1px 0   0 rgba(16, 185, 129, 0.12),
+        0 4px 32px 0 rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+    /* Subtle animated glow overlay via pseudo */
+    isolation: isolate;
+}
+
+/* Animated pulse overlay */
+.uy-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 50% 200% at 15% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+    animation: uyGlowPulse 3.5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Gold shimmer accent line at very top */
+.uy-header::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(232, 195, 81, 0.6) 20%,
+        rgba(16, 185, 129, 0.8) 50%,
+        rgba(232, 195, 81, 0.6) 80%,
+        transparent 100%
+    );
+    background-size: 400px 2px;
+    animation: uyShimmerSlide 4s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Ensure all children stack above pseudo-elements */
+.uy-header > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* ── Left: Logo + Brand ─────────────────────────────────────── */
+.uy-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.uy-logo-ring {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2.5px solid rgba(232, 195, 81, 0.50);
+    box-shadow:
+        0 0 20px rgba(232, 195, 81, 0.25),
+        0 0 40px rgba(16, 185, 129, 0.10),
+        inset 0 0 12px rgba(232, 195, 81, 0.08);
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.3s, border-color 0.3s, transform 0.3s;
+}
+
+.uy-header-left:hover .uy-logo-ring {
+    border-color: rgba(232, 195, 81, 0.75);
+    box-shadow:
+        0 0 28px rgba(232, 195, 81, 0.40),
+        0 0 60px rgba(16, 185, 129, 0.15);
+    transform: scale(1.06);
+}
+
+.uy-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.uy-brand-name {
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    white-space: nowrap;
+    background: linear-gradient(90deg, #e8c351 0%, #ffe082 40%, #22c55e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 2px 12px rgba(232, 195, 81, 0.30));
+    transition: filter 0.3s;
+}
+
+.uy-header-left:hover .uy-brand-name {
+    filter: drop-shadow(0 2px 20px rgba(232, 195, 81, 0.55));
+}
+
+/* ── Center: Search ─────────────────────────────────────────── */
+.uy-search-wrap {
+    flex: 1;
+    max-width: 600px; /* Slightly wider for better UX */
+    margin: 0 auto;   /* Perfect horizontal centering */
+    position: relative;
+}
+
+.uy-search-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.25) !important;
+    border: 1px solid rgba(16, 185, 129, 0.15) !important;
+    border-radius: 14px;
+    padding: 0 16px;
+    height: 48px;
+    transition: all 0.3s ease;
+}
+
+.uy-search-box:focus-within {
+    background: rgba(0, 0, 0, 0.40) !important;
+    border-color: rgba(16, 185, 129, 0.6) !important;
+    box-shadow:
+        0 0 20px rgba(16, 185, 129, 0.15),
+        0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.uy-search-icon {
+    color: rgba(148, 163, 184, 0.70);
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: color 0.15s;
+}
+
+.uy-search-box:focus-within .uy-search-icon {
+    color: #10b981;
+}
+
+.uy-search-input {
+    flex: 1;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    color: #ecfdf5 !important;
+    font-size: 14.5px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 500;
+    min-width: 0;
+}
+
+.uy-search-input::placeholder {
+    color: rgba(16, 185, 129, 0.40) !important;
+}
+
+.uy-search-clear {
+    color: rgba(148, 163, 184, 0.50);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 3px;
+    border-radius: 5px;
+    transition: color 0.15s, background 0.15s;
+}
+
+.uy-search-clear:hover {
+    color: #ecfdf5;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.uy-search-clear.visible {
+    display: flex;
+}
+
+/* ── Search Dropdown ────────────────────────────────────────── */
+.uy-search-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
+    background: rgba(4, 28, 23, 0.98);
+    border: 1px solid rgba(16, 185, 129, 0.15);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow:
+        0 24px 64px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.04);
+    z-index: 10000;
+    display: none;
+    backdrop-filter: blur(24px);
+}
+
+.uy-search-dropdown.open {
+    display: block;
+    animation: uyDropIn 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.uy-drop-section {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.uy-drop-section:last-child {
+    border-bottom: none;
+}
+
+.uy-drop-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(148, 163, 184, 0.50);
+    padding: 4px 16px 2px;
+}
+
+.uy-drop-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+}
+
+.uy-drop-item:hover,
+.uy-drop-item.focused {
+    background: rgba(16, 185, 129, 0.10);
+}
+
+.uy-drop-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.uy-drop-icon.crop    { background: rgba(16,  185, 129, 0.14); }
+.uy-drop-icon.page    { background: rgba(59,  130, 246, 0.14); }
+.uy-drop-icon.disease { background: rgba(239, 68,  68,  0.14); }
+
+.uy-drop-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #ecfdf5;
+    flex: 1;
+}
+
+.uy-drop-name mark {
+    background: transparent;
+    color: #10b981;
+    font-weight: 800;
+}
+
+.uy-drop-tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 2px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+}
+
+.uy-drop-tag.crop    { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.uy-drop-tag.page    { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+.uy-drop-tag.disease { background: rgba(239, 68, 68, 0.15);  color: #f87171; }
+
+.uy-drop-empty {
+    padding: 20px 16px;
+    text-align: center;
+    font-size: 13.5px;
+    color: rgba(148, 163, 184, 0.50);
+}
+
+/* ── Right: Icons + Profile ─────────────────────────────────── */
+.uy-header-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+/* Icon button (bell, settings, logout) */
+.uy-icon-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    color: rgba(148, 163, 184, 0.80);
+    text-decoration: none;
+    transition: color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.15s;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.uy-icon-btn:hover {
+    color: #ecfdf5;
+    background: rgba(16, 185, 129, 0.10);
+    border-color: rgba(16, 185, 129, 0.25);
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.15);
+    transform: translateY(-1px);
+}
+
+.uy-logout-btn:hover {
+    color: #f87171;
+    background: rgba(239, 68, 68, 0.10);
+    border-color: rgba(239, 68, 68, 0.25);
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.15);
+}
+
+.uy-ringing svg {
+    animation: uyBellRinging 1.5s ease-in-out infinite;
+    transform-origin: top center;
+    color: #ffd700 !important; /* Gold highlight for active bell */
+    filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
+}
+
+/* Notification badge */
+.uy-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    font-size: 9.5px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: 2px solid rgba(2, 15, 12, 1);
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+    animation: uyBadgePop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Profile pill */
+.uy-profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 6px 14px 6px 6px;
+    border-radius: 14px;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    margin-left: 6px;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.uy-profile-btn:hover {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.30);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.12);
+    transform: translateY(-1px);
+}
+
+.uy-avatar-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(16, 185, 129, 0.35);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.20);
+    flex-shrink: 0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.uy-profile-btn:hover .uy-avatar-img {
+    border-color: rgba(16, 185, 129, 0.65);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.35);
+}
+
+.uy-avatar-initials {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #020f0c;
+    font-size: 16px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 2px solid rgba(16, 185, 129, 0.45);
+    box-shadow: 0 0 14px rgba(16, 185, 129, 0.25);
+}
+
+.uy-profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.uy-profile-name {
+    font-size: 14px;
+    font-weight: 800;
+    color: #ecfdf5;
+    white-space: nowrap;
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: -0.01em;
+}
+
+.uy-profile-role {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #10b981;
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+/* ── Divider between sections ────────────────────────────────── */
+.uy-header-right > .uy-divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 0 4px;
+    flex-shrink: 0;
+}
+
+/* ── Mobile Responsive ──────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .uy-header {
+        padding: 0 20px;
+        gap: 14px;
+    }
+    .uy-brand-name {
+        font-size: 24px;
+    }
+    .uy-logo-ring {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    .uy-header {
+        padding: 0 14px;
+        gap: 10px;
+        height: 72px;
+    }
+
+    .uy-brand-name {
+        font-size: 20px;
+    }
+
+    .uy-logo-ring {
+        width: 44px;
+        height: 44px;
+    }
+
+    .uy-search-wrap {
+        max-width: 100%;
+    }
+
+    .uy-profile-info {
+        display: none;
+    }
+
+    .uy-profile-btn {
+        padding: 5px;
+        margin-left: 2px;
+        border-radius: 50%;
+    }
+
+    .uy-icon-btn {
+        width: 42px;
+        height: 42px;
+    }
+
+    /* Mobile: collapsed search */
+    .uy-search-wrap.mobile-collapsed .uy-search-box {
+        width: 44px;
+        padding: 0;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 12px;
+    }
+
+    .uy-search-wrap.mobile-collapsed .uy-search-input {
+        display: none;
+    }
+
+    .uy-search-wrap.mobile-collapsed .uy-search-clear {
+        display: none !important;
+    }
+
+    .uy-search-wrap.mobile-expanded {
+        position: absolute;
+        left: 14px;
+        right: 14px;
+        max-width: none;
+        z-index: 99999;
+    }
+}
+
+@media (max-width: 480px) {
+    .uy-brand-name {
+        font-size: 17px;
+    }
+    .uy-logo-ring {
+        width: 38px;
+        height: 38px;
+    }
+}
+
+/* ── Page content push: 88px header offset ───────────────────── */
+/* If your layout uses padding-top, update to 88px for the new height */

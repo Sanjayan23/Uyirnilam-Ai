@@ -1,0 +1,138 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   UYIRNILAM AI - NAVIGATION & TRANSITION ANIMATIONS
+   Smooth page transitions with visual effects
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Slide animations for sidebar */
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutLeft {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+/* Fade animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Spin animation */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Smooth page transition overlay */
+#nav-transition-overlay {
+    backdrop-filter: blur(8px);
+    background: linear-gradient(135deg, rgba(2, 15, 12, 0.98) 0%, rgba(4, 59, 37, 0.98) 100%) !important;
+}
+
+/* Enhance sidebar animation */
+#mainSidebar {
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#sidebarBackdrop {
+    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    pointer-events: none;
+}
+
+#sidebarBackdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Active state for sidebar items */
+.sidebar-item.active {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    font-weight: 600;
+    box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.1);
+}
+
+/* Ripple effect for sidebar interactions */
+.sidebar-item {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-item::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(16, 185, 129, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    pointer-events: none;
+}
+
+.sidebar-item:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Smooth scale effect on click */
+.sidebar-item:active {
+    transform: scale(0.95);
+}
+
+/* Navigation link hover effect */
+[onclick*="navTo"]:hover {
+    background: rgba(16, 185, 129, 0.08);
+    transition: all 0.2s ease;
+}
+
+/* Loader animation */
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(16, 185, 129, 0.6);
+    }
+}
+
+.nav-loading {
+    animation: pulse-glow 2s ease-in-out infinite;
+}

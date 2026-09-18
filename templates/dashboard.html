@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Uyirnilam AI - Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-responsive.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header_styles.css') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Uyirnilam AI">
+    <script>
+        // FOUC Mitigation: Reveal page once styles are ready
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.body.classList.add('reveal');
+            }, 100);
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script id="tailwind-config">
+        tailwind.config = { darkMode: "class", theme: { extend: { colors: { "primary": "#10b981", "primary-dim": "#059669", "surface": "#020f0c", "surface-variant": "#041c17", "on-surface": "#ecfdf5", "on-surface-variant": "#94a3b8", "outline-variant": "rgba(16, 185, 129, 0.1)" }, fontFamily: { "sans": ["'Plus Jakarta Sans'", "sans-serif"] }, borderRadius: { "DEFAULT": "0.75rem", "lg": "1.25rem", "xl": "2rem" } } } }
+    </script>
+    <style>
+        /* ── FOUC CLOAK ── */
+        .cloak {
+            opacity: 0;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal {
+            opacity: 1 !important;
+        }
+
+        body {
+            background: #020f0c;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #ecfdf5;
+            min-height: 100vh;
+            letter-spacing: -0.01em;
+            line-height: 1.4;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .neon-accent {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+        }
+
+
+        input,
+        select {
+            background: rgba(255, 255, 255, 0.02) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            color: white !important;
+        }
+
+        option {
+            background: #020f0c;
+            color: white;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: rgba(16, 185, 129, 0.4) !important;
+            box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.4) !important;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 20;
+        }
+
+        .mode-option input:checked+label {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        #sidebar.sidebar-hidden {
+            transform: translateX(-100%) !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #main-content.full-width {
+            margin-left: 0 !important;
+            max-width: 100% !important;
+        }
+
+        @keyframes scan {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(320px);
+            }
+        }
+
+        /* Unique Logo Bounce, Spin, Glow, and Blink Animation */
+        @keyframes magic-bounce-blink {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1) rotate(0deg);
+                opacity: 1;
+                filter: brightness(1) drop-shadow(0 0 0 rgba(232, 195, 81, 0));
+            }
+
+            15% {
+                transform: translateY(-25px) scale(1.15) rotate(12deg);
+                opacity: 0.85;
+                filter: brightness(1.5) drop-shadow(0 0 35px #e8c351);
+            }
+
+            30% {
+                transform: translateY(8px) scale(0.9) rotate(-10deg);
+                opacity: 1;
+                filter: brightness(1) drop-shadow(0 0 0 rgba(232, 195, 81, 0));
+            }
+
+            45% {
+                transform: translateY(-18px) scale(1.1) rotate(8deg);
+                opacity: 0.6;
+                filter: brightness(1.8) drop-shadow(0 0 45px #22c55e);
+            }
+
+            60% {
+                transform: translateY(4px) scale(0.95) rotate(-4deg);
+                opacity: 1;
+                filter: brightness(1) drop-shadow(0 0 0 rgba(232, 195, 81, 0));
+            }
+
+            75% {
+                transform: translateY(-10px) scale(1.05) rotate(0deg);
+                opacity: 0.5;
+                filter: brightness(2) drop-shadow(0 0 30px #e8c351);
+            }
+
+            85% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+                filter: brightness(1);
+            }
+
+            /* Quick blink/strobe effect */
+            87% {
+                opacity: 0;
+                filter: brightness(2.5);
+                transform: scale(1.1);
+            }
+
+            90% {
+                opacity: 1;
+                filter: brightness(1);
+                transform: scale(1);
+            }
+
+            93% {
+                opacity: 0;
+                filter: brightness(2.5);
+                transform: scale(1.1);
+            }
+
+            96% {
+                opacity: 1;
+                filter: brightness(1);
+                transform: scale(1);
+            }
+
+            98% {
+                opacity: 0;
+                filter: brightness(2.5);
+                transform: scale(1.1);
+            }
+        }
+
+        .animate-magic-bounce {
+            animation: magic-bounce-blink 1.4s cubic-bezier(0.28, 0.84, 0.42, 1) forwards;
+        }
+
+        /* ═══════════════════════════════════════════════════════════════
+           NAVIGATION TRANSITION ANIMATIONS
+           ═══════════════════════════════════════════════════════════════ */
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutLeft {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+
+            to {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Smooth page transition overlay */
+        #nav-transition-overlay {
+            backdrop-filter: blur(8px);
+            background: linear-gradient(135deg, rgba(2, 15, 12, 0.98) 0%, rgba(4, 59, 37, 0.98) 100%) !important;
+        }
+
+        /* Enhance sidebar animation */
+        #mainSidebar {
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #sidebarBackdrop {
+            transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Active state for sidebar items */
+        .sidebar-item.active {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            font-weight: 600;
+            box-shadow: inset 0 0 20px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Ripple effect for sidebar interactions */
+        .sidebar-item {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+            pointer-events: none;
+        }
+
+        .sidebar-item:active::before {
+            width: 300px;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden cloak" data-revealed="false">
+    <!-- ══════════ GLOBAL HEADER START ══════════ -->
+    <header class="uy-header">
+
+        <div class="uy-header-left">
+            <button type="button" class="mobile-menu-btn lg:hidden" onclick="toggleSidebar()" aria-label="Open Menu">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <div class="uy-logo-ring">
+                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Uyirnilam AI" class="uy-logo-img"
+                    onerror="this.src='https://ui-avatars.com/api/?name=U&background=e8c351&color=020f0c&size=64&bold=true'" />
+            </div>
+            <span class="uy-brand-name">Uyirnilam AI</span>
+        </div>
+
+        <div class="uy-search-wrap" id="uySearchWrap">
+            <div class="uy-search-box" id="uySearchBox">
+                <span class="uy-search-icon" id="uySearchToggle">
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                        <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.8" />
+                        <path d="M15 15l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                </span>
+                <input type="text" id="uySearchInput" class="uy-search-input"
+                    placeholder="Search crops, pages, diseases…" autocomplete="off" spellcheck="false" />
+                <span class="uy-search-clear" id="uySearchClear">
+                    <svg width="12" height="12" viewBox="0 0 12 12">
+                        <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" />
+                    </svg>
+                </span>
+            </div>
+            <div class="uy-search-dropdown" id="uySearchDropdown"></div>
+        </div>
+
+        <div class="uy-header-right">
+
+            <a href="/notifications"
+                class="uy-icon-btn {% if notification_count and notification_count > 0 %}uy-ringing{% endif %}"
+                title="Notifications">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M12.02 2.91C8.72 2.91 6.03 5.59 6.03 8.89V13.01C6.03 13.72 5.74 14.73 5.39 15.26L4.1 17.21C3.31 18.4 3.86 19.75 5.32 19.75H18.72C20.18 19.75 20.73 18.4 19.94 17.21L18.65 15.26C18.3 14.73 18.01 13.72 18.01 13.01V8.89C18.01 5.6 15.31 2.91 12.02 2.91Z"
+                        stroke="currentColor" stroke-width="1.8" stroke-miterlimit="10" stroke-linecap="round" />
+                    <path d="M13.87 3.2C13.56 3.11 13.24 3.04 12.91 3" stroke="currentColor" stroke-width="1.8"
+                        stroke-miterlimit="10" stroke-linecap="round" />
+                    <path
+                        d="M15.02 20.06C15.02 21.71 13.67 23.06 12.02 23.06C11.2 23.06 10.45 22.73 9.9 22.18C9.35 21.63 9.02 20.88 9.02 20.06"
+                        stroke="currentColor" stroke-width="1.8" stroke-miterlimit="10" />
+                </svg>
+                {% if notification_count and notification_count > 0 %}
+                <span class="uy-badge">{{ notification_count if notification_count < 100 else '99+' }}</span>
+                        {% endif %}
+            </a>
+
+            <a href="/profile" class="uy-profile-btn" title="My Profile">
+                {% if user_photo %}
+                <img src="{{ user_photo }}" alt="Profile" class="uy-avatar-img" />
+                {% else %}
+                <div class="uy-avatar-initials">{{ (user_name or 'F')[0].upper() }}</div>
+                {% endif %}
+                <div class="uy-profile-info">
+                    <span class="uy-profile-name">{{ user_name or 'Farmer' }}</span>
+                    <span class="uy-profile-role">Verified Farmer</span>
+                </div>
+            </a>
+
+            <a href="/profile" class="uy-icon-btn" title="Settings">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                        stroke="currentColor" stroke-width="1.8" />
+                </svg>
+            </a>
+
+            <a href="/logout" class="uy-icon-btn uy-logout-btn" title="Logout">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" />
+                </svg>
+            </a>
+
+        </div>
+    </header>
+
+    <!-- Sidebar Backdrop for Mobile -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+    <aside id="mainSidebar"
+        class="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 bg-surface-variant/30 z-40 bg-[radial-gradient(circle_at_left,_rgba(16,185,129,0.08),_transparent_50%)]">
+
+        <!-- ✨ FULL-SIZE PREMIUM SIDEBAR CARD ✨ -->
+        <div class="relative w-full h-full flex flex-col items-center justify-center">
+            <!-- Animation Backdrop (Preserved) -->
+            <div
+                class="absolute inset-0 bg-gradient-to-br from-emerald-950/40 via-green-950/20 to-black/60 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]">
+            </div>
+
+            <!-- Subtle Decorative Grid (NEW PREMIUM FEATURE) -->
+            <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
+                style="background-image: radial-gradient(#10b981 1px, transparent 1px); background-size: 30px 30px;">
+            </div>
+
+            <!-- Glowing Badge Overlay (Preserved) -->
+            <div
+                class="absolute inset-0 bg-gradient-to-r from-[#e8c351]/10 via-emerald-500/5 to-transparent opacity-30 animate-pulse">
+            </div>
+
+            <!-- Corner Decorative indicators (Pinned to sidebar edges) -->
+            <div
+                class="absolute top-0 right-0 w-3 h-3 bg-emerald-400 rounded-bl-full shadow-[0_0_20px_rgba(16,185,129,0.9)] z-20">
+            </div>
+            <div
+                class="absolute bottom-0 left-0 w-3 h-3 bg-[#e8c351] rounded-tr-full shadow-[0_0_20px_rgba(232,195,81,0.9)] z-20">
+            </div>
+
+            <!-- Main Content Container (Centered & Lowered) -->
+            <div class="relative z-10 w-full px-6 pt-24 flex flex-col items-center gap-12">
+
+                <!-- Branding Section (Preserved & Centered) -->
+                <div class="text-center group cursor-pointer">
+                    <!-- Icon -->
+                    <div class="flex justify-center mb-6">
+                        <span
+                            class="material-symbols-outlined text-[#e8c351] text-5xl animate-bounce drop-shadow-[0_0_15px_rgba(232,195,81,0.5)]">wb_sunny</span>
+                    </div>
+
+                    <!-- Text -->
+                    <div class="space-y-2">
+                        <p class="text-xl font-black leading-tight tracking-tighter uppercase">
+                            <span
+                                class="bg-gradient-to-r from-[#ffd700] via-[#e8c351] to-[#ffe082] bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(232,195,81,0.9)]">
+                                Smart Farming,
+                            </span>
+                        </p>
+                        <p class="text-xl font-black leading-tight tracking-tighter uppercase">
+                            <span
+                                class="bg-gradient-to-r from-emerald-300 via-green-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(16,185,129,0.9)]">
+                                Bright Future
+                            </span>
+                        </p>
+                    </div>
+
+                    <!-- Decorative Line -->
+                    <div
+                        class="mt-8 h-0.5 w-24 mx-auto bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent rounded-full">
+                    </div>
+                </div>
+
+                <!-- NAVIGATION MENU (Cylindrical Highlight) -->
+                <nav class="w-full">
+                    <ul class="space-y-4">
+                        <li>
+                            <a href="javascript:void(0)" onclick="navTo('/dashboard', 'Dashboard')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:rotate-12 transition-transform">grid_view</span>
+                                <span
+                                    class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)" onclick="navTo('/irrigation', 'Irrigation')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:scale-110 transition-transform">water_drop</span>
+                                <span
+                                    class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Irrigation</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)" onclick="navTo('/harvest', 'Harvest')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:-rotate-12 transition-transform">agriculture</span>
+                                <span
+                                    class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Harvest</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)" onclick="navTo('/pest', 'Pest Control')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:tada transition-transform">pest_control</span>
+                                <span class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Pest
+                                    Control</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)" onclick="navTo('/market', 'Market Trends')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:translate-y--0.5 transition-transform">trending_up</span>
+                                <span class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Market
+                                    Trends</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+
+            </div>
+
+        </div>
+        </div>
+    </aside>
+    <main class="lg:ml-64 layout-main-wrapper" id="main-content">
+        <div class="page-container">
+            <section class="page-section">
+                <div class="flex flex-col md:flex-row md:items-center items-start gap-4 mb-8">
+                    <div
+                        class="relative w-16 h-16 flex items-center justify-center bg-[#FDB931]/10 rounded-2xl shadow-[0_0_20px_rgba(253,185,49,0.1)] shrink-0">
+                        <span class="material-symbols-outlined text-[#FDB931] text-4xl animate-zigzag">grid_view</span>
+                        <div class="absolute inset-0 bg-[#FDB931]/5 blur-xl rounded-full animate-pulse"></div>
+                    </div>
+                    <div class="w-full">
+                        <h1 class="text-3xl md:text-5xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-[#FDB931] via-[#FDB931] to-[#FFD700] drop-shadow-[0_4px_15px_rgba(253,185,49,0.35)]"
+                            style="letter-spacing: -0.06em;">Uyirnilam AI</h1>
+                        <p class="animated-subtitle text-sm md:text-base mt-2">Welcome back to your precision farming
+                            dashboard.
+                        </p>
+
+                        <!-- Power Points Highlight -->
+                        <div class="power-points-container"
+                            style="--icon-color-start: #ffea00; --icon-color-end: #fbbf24; --icon-glow: rgba(255, 215, 0, 0.4); gap: 1.5rem;">
+                            <div class="power-point-item flex-shrink-0">
+                                <span class="material-symbols-outlined shrink-0"
+                                    style="color: #ffd700;">query_stats</span>
+                                <span class="point-text">Precision Analysis</span>
+                            </div>
+                            <div class="power-point-divider hidden md:block"></div>
+                            <div class="power-point-item flex-shrink-0">
+                                <span class="material-symbols-outlined shrink-0" style="color: #ffd700;">strategy</span>
+                                <span class="point-text">Smart Planning</span>
+                            </div>
+                            <div class="power-point-divider hidden md:block"></div>
+                            <div class="power-point-item flex-shrink-0">
+                                <span class="material-symbols-outlined shrink-0"
+                                    style="color: #ffd700;">history_edu</span>
+                                <span class="point-text">Ancient Wisdom</span>
+                            </div>
+                            <div class="power-point-divider hidden md:block"></div>
+                            <div class="power-point-item flex-shrink-0">
+                                <span class="material-symbols-outlined shrink-0" style="color: #ffd700;">language</span>
+                                <span class="point-text">Global Insight</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page-section">
+                <div
+                    class="relative rounded-3xl p-8 md:p-10 overflow-hidden bg-gradient-to-r from-[#022416] via-[#043b25] to-[#022416] shadow-[0_0_40px_rgba(16,185,129,0.25)] border border-primary/30 group">
+                    <!-- Glowing Orb Effects -->
+                    <div
+                        class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary/20 via-transparent to-transparent opacity-80">
+                    </div>
+                    <div
+                        class="absolute -bottom-24 -right-24 w-64 h-64 bg-primary rounded-full mix-blend-screen filter blur-[100px] opacity-40 group-hover:opacity-60 transition-opacity duration-700">
+                    </div>
+
+                    <div class="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-8">
+                        <div class="space-y-4 flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span
+                                    class="material-symbols-outlined text-primary text-2xl drop-shadow-[0_0_10px_rgba(16,185,129,0.8)]">format_quote</span>
+                                <span class="text-primary text-[10px] font-black uppercase tracking-[0.3em]">Ancient
+                                    Wisdom</span>
+                            </div>
+                            <p
+                                class="text-white font-black text-2xl md:text-3xl lg:text-4xl leading-tight tracking-tight drop-shadow-lg">
+                                "When soil is understood, <br class="hidden md:block" />
+                                <span
+                                    class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-primary">even
+                                    less fertilizer gives high yield.</span>"
+                            </p>
+                            <p
+                                class="text-emerald-400 text-xs md:text-sm font-bold uppercase tracking-[0.2em] flex items-center gap-3">
+                                <span class="w-10 h-[2px] bg-primary/60 rounded-full"></span>
+                                Thirukkural 1032
+                            </p>
+                        </div>
+                        <div class="text-left xl:text-right xl:pl-10 xl:border-l-2 border-primary/20 flex-shrink-0">
+                            <p
+                                class="text-emerald-50 text-sm md:text-lg font-medium leading-relaxed italic tracking-wide opacity-90 drop-shadow-md">
+                                உழுதுண்டு வாழ்வாரே வாழ்வார்மற் றெல்லாம்<br />
+                                தொழுதுண்டு பின்செல்பவர்.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-10">
+                <div class="md:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div class="glass-card rounded-2xl p-6">
+                        <div class="flex items-center gap-2.5 mb-6"><span
+                                class="material-symbols-outlined text-primary">location_on</span>
+                            <h3 class="text-sm font-bold uppercase tracking-widest text-white">Location & Soil</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label
+                                    class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold mb-1.5 block">Coordinates</label>
+                                <div class="flex gap-2">
+                                    <div class="relative flex-1"><input
+                                            class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition-all"
+                                            id="coords-input" placeholder="18.5204, 73.8567" type="text" /></div>
+                                    <button
+                                        class="bg-primary/10 text-primary border border-primary/20 px-3 rounded-xl hover:bg-primary hover:text-surface transition-all active:scale-95 flex items-center gap-2 group whitespace-nowrap"
+                                        onclick="getLocation(); this.classList.add('animate-pulse')">
+                                        <span
+                                            class="material-symbols-outlined text-lg group-hover:rotate-90 transition-transform">my_location</span>
+                                        <span
+                                            class="text-[10px] font-bold uppercase tracking-widest hidden sm:inline">Auto
+                                            Detect</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold mb-1.5 block">Soil
+                                    Classification</label>
+                                <select id="soil"
+                                    class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none appearance-none cursor-pointer">
+                                    <option value="loamy">Loamy Soil</option>
+                                    <option value="clay">Clay Soil</option>
+                                    <option value="sandy">Sandy Soil</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label
+                                    class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold mb-1.5 block">Previous
+                                    Crop</label>
+                                <select id="previous_crop"
+                                    class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none appearance-none cursor-pointer">
+                                    <option value="">Select Previous Crop</option>
+                                    <option value="rice">Rice / Paddy</option>
+                                    <option value="wheat">Wheat</option>
+                                    <option value="maize">Maize</option>
+                                    <option value="sugarcane">Sugarcane</option>
+                                    <option value="cotton">Cotton</option>
+                                    <option value="soybean">Soybean</option>
+                                    <option value="grapes">Grapes</option>
+                                    <option value="banana">Banana</option>
+                                    <option value="mango">Mango</option>
+                                    <option value="millet">Millet</option>
+                                    <option value="pulses">Pulses</option>
+                                    <option value="groundnut">Groundnut</option>
+                                    <option value="barley">Barley</option>
+                                    <option value="oats">Oats</option>
+                                    <option value="none">None (Fallow Land)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card rounded-2xl p-6 flex flex-col">
+                        <div class="flex items-center gap-2.5 mb-6"><span
+                                class="material-symbols-outlined text-primary">landscape</span>
+                            <h3 class="text-sm font-bold uppercase tracking-widest text-white">Land Details</h3>
+                        </div>
+                        <div class="space-y-4 flex-1">
+                            <div>
+                                <label
+                                    class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold mb-1.5 block">Total
+                                    Acreage</label>
+                                <input id="landSize"
+                                    class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none transition-all"
+                                    placeholder="5.5" type="number" />
+                            </div>
+                            <div>
+                                <label
+                                    class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold mb-1.5 block">Land
+                                    Type</label>
+                                <select id="land"
+                                    class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none appearance-none cursor-pointer">
+                                    <option value="flat">Flat Lowland</option>
+                                    <option value="dry">Dry / Arid Terrain</option>
+                                    <option value="wet">Wet / Marshy Terrain</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label
+                                    class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold mb-1.5 block">Recommendation
+                                    Mode</label>
+                                <div class="grid grid-cols-3 gap-1 bg-white/5 p-1 rounded-xl">
+                                    <div class="mode-option"><input checked="" class="hidden" id="mode-normal"
+                                            value="basic" name="rec-mode" type="radio" /><label
+                                            class="flex items-center justify-center py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg cursor-pointer transition-all border border-transparent hover:bg-white/5"
+                                            for="mode-normal">Normal</label></div>
+                                    <div class="mode-option"><input class="hidden" id="mode-moderate" value="moderate"
+                                            name="rec-mode" type="radio" /><label
+                                            class="flex items-center justify-center py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg cursor-pointer transition-all border border-transparent hover:bg-white/5"
+                                            for="mode-moderate">Moderate</label></div>
+                                    <div class="mode-option"><input class="hidden" id="mode-advanced" value="advanced"
+                                            name="rec-mode" type="radio" /><label
+                                            class="flex items-center justify-center py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg cursor-pointer transition-all border border-transparent hover:bg-white/5"
+                                            for="mode-advanced">Advanced</label></div>
+                                </div>
+                            </div>
+                            <button
+                                class="w-full mt-4 bg-primary/10 text-primary border border-primary/20 py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-primary hover:text-surface transition-all active:scale-[0.98]"
+                                onclick="getRecommendation()">
+                                <span class="material-symbols-outlined text-lg">auto_awesome</span>Process Analysis
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="md:col-span-4 glass-card rounded-2xl p-6 flex flex-col relative overflow-hidden bg-gradient-to-br from-surface to-surface-variant backdrop-blur-3xl shadow-[0_0_20px_rgba(255,255,255,0.03)] border border-white/10">
+                    <div class="absolute -top-10 -right-10 opacity-10 blur-xl"><span
+                            class="material-symbols-outlined text-[150px] text-white">cloud</span></div>
+                    <div class="flex items-center justify-between mb-6 relative z-10">
+                        <div class="flex items-center gap-2.5">
+                            <span class="material-symbols-outlined text-primary">cloud</span>
+                            <h3 class="text-sm font-bold uppercase tracking-widest text-white">Weather</h3>
+                        </div>
+                        <div class="flex items-center gap-2 px-3 py-1 bg-white/5 rounded-full border border-white/5 cursor-help group/loc"
+                            onclick="getLocation(); this.querySelector('span').classList.add('animate-spin')"
+                            title="Syncing with atmospheric network">
+                            <span
+                                class="material-symbols-outlined text-[10px] text-primary transition-transform group-hover/loc:rotate-180">sync</span>
+                            <span id="dashboard-city"
+                                class="text-[9px] font-black text-on-surface-variant uppercase tracking-widest truncate max-w-[100px]">Detecting...</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center flex-1">
+                        <div class="flex items-baseline gap-1"><span id="weather-temp"
+                                class="text-6xl font-bold text-white tracking-tighter">--</span><span
+                                class="text-2xl font-medium text-white/60">°C</span></div>
+                        <p id="weather-desc" class="text-primary text-xs font-bold uppercase tracking-widest mt-2">Ready
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-2 border-t border-white/5 mt-6 pt-6">
+                        <div class="flex flex-col items-center"><span id="weather-humidity"
+                                class="text-lg font-bold text-white">--%</span><span
+                                class="text-[9px] uppercase tracking-widest text-on-surface-variant font-bold">Humidity</span>
+                        </div>
+                        <div class="flex flex-col items-center border-l border-white/5"><span id="weather-rain"
+                                class="text-lg font-bold text-white">--mm</span><span
+                                class="text-[9px] uppercase tracking-widest text-on-surface-variant font-bold">Precipitation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:col-span-12 glass-card rounded-2xl p-6 md:p-12 flex-col items-center justify-center min-h-[450px] relative overflow-hidden"
+                    id="loading-state">
+                    <!-- Massive Animating Logo Orb -->
+                    <div
+                        class="relative flex flex-col items-center justify-center w-[300px] h-[300px] md:w-[380px] md:h-[380px] mx-auto">
+                        <!-- Magic Bouncing Background -->
+                        <div
+                            class="absolute inset-0 rounded-full border-[4px] border-[#e8c351]/60 shadow-[0_0_80px_rgba(232,195,81,0.5)] bg-[#020f0c] overflow-hidden animate-[magic-bounce-blink_2s_cubic-bezier(0.28,0.84,0.42,1)_infinite]">
+                            <img src="/static/images/logo.jpg" alt="Uyirnilam AI Processing"
+                                class="absolute inset-0 w-full h-full object-cover mix-blend-screen opacity-40 blur-[1px] scale-110"
+                                onerror="this.src='/static/logo.jpg'; this.onerror=null;" />
+                            <div class="absolute inset-0 bg-[#020f0c]/70 backdrop-blur-[2px]"></div>
+                        </div>
+                        <!-- Text perfectly centered inside -->
+                        <div
+                            class="relative z-10 flex flex-col items-center justify-center text-center p-8 w-full h-full animate-[pulse_2s_infinite]">
+                            <!-- Rotating inner icon -->
+                            <span
+                                class="material-symbols-outlined text-[#e8c351] text-4xl mb-4 animate-[spin_4s_linear_infinite] drop-shadow-[0_0_15px_rgba(232,195,81,0.8)]">settings_b_roll</span>
+                            <!-- The JS injected text container -->
+                            <h3 id="loadingText"
+                                class="text-sm md:text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-[#e8c351] via-[#ffe082] to-[#22c55e] tracking-widest uppercase mb-2 drop-shadow-[0_0_15px_rgba(232,195,81,0.6)] leading-relaxed px-4">
+                                Generating with Uyirnilam AI...
+                            </h3>
+                            <div class="w-24 h-1.5 mt-5 bg-white/10 rounded-full overflow-hidden">
+                                <div
+                                    class="h-full bg-[#22c55e] animate-[pulse_1s_ease-in-out_infinite] w-full shadow-[0_0_15px_#22c55e]">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="recommendation-card" style="display: none;"
+                    class="md:col-span-12 glass-card rounded-2xl overflow-hidden flex flex-col md:flex-row neon-accent w-full">
+                    <div class="md:w-5/12 h-64 md:h-auto overflow-hidden"><img id="top-crop-img" alt="Top crop"
+                            class="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                            src="" />
+                    </div>
+                    <div class="md:w-7/12 p-8 flex flex-col justify-center">
+                        <div class="flex justify-between items-start mb-8">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2"><span
+                                        class="w-2 h-2 rounded-full bg-primary animate-pulse"></span><span
+                                        id="top-crop-confidence"
+                                        class="text-primary text-[10px] font-bold uppercase tracking-[0.2em]">Match
+                                        Confidence: --</span></div>
+                                <h2 id="top-crop-name"
+                                    class="text-4xl font-black text-white tracking-tight leading-none mb-2">Crop</h2>
+                                <div class="flex items-center gap-1.5 text-on-surface-variant text-xs font-medium"><span
+                                        class="material-symbols-outlined text-sm">location_on</span><span
+                                        id="top-crop-location">Fetching location...</span></div>
+                            </div>
+                            <div class="text-right"><span id="top-crop-profit"
+                                    class="text-3xl font-bold text-primary tracking-tighter">--</span>
+                                <p class="text-[9px] uppercase text-on-surface-variant font-bold tracking-widest">Est.
+                                    Profit</p>
+                            </div>
+                        </div>
+                        <div class="space-y-8">
+                            <div>
+                                <div
+                                    class="flex justify-between text-[10px] font-bold uppercase tracking-widest mb-2.5">
+                                    <span class="text-on-surface-variant">Soil Nutrient Synergy</span><span
+                                        class="text-primary">Optimal Range</span>
+                                </div>
+                                <div class="h-1.5 w-full bg-white/5 rounded-full">
+                                    <div id="top-crop-bar"
+                                        class="h-full bg-primary w-[0%] rounded-full shadow-[0_0_10px_rgba(16,185,129,0.3)]">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-12">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/5">
+                                        <span class="material-symbols-outlined text-primary text-xl">water_drop</span>
+                                    </div>
+                                    <div>
+                                        <p id="top-crop-water" class="text-lg font-bold text-white tracking-tight">-- L
+                                        </p>
+                                        <p
+                                            class="text-[9px] uppercase text-on-surface-variant font-bold tracking-widest">
+                                            Water / Cycle</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center border border-white/5">
+                                        <span
+                                            class="material-symbols-outlined text-primary text-xl">calendar_today</span>
+                                    </div>
+                                    <div>
+                                        <p id="top-crop-time" class="text-lg font-bold text-white tracking-tight">--
+                                            Days
+                                        </p>
+                                        <p
+                                            class="text-[9px] uppercase text-on-surface-variant font-bold tracking-widest">
+                                            Growth Cycle</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <p id="top-crop-desc" style="color: #a8e6cf; margin-top:20px; font-size:14px;"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="alternative-crops" style="display: none;"
+                    class="md:col-span-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10"></div>
+
+                <div id="intelligence-matrix" style="display: none;"
+                    class="md:col-span-12 glass-card rounded-2xl overflow-hidden p-8">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+                        <div class="flex items-center gap-3"><span
+                                class="material-symbols-outlined text-primary">analytics</span>
+                            <h3 class="text-sm font-bold uppercase tracking-[0.2em] text-white">Comprehensive Crop
+                                Intelligence</h3>
+                        </div>
+                        <div class="flex gap-4">
+                            <button
+                                class="px-4 py-2 bg-primary/20 text-primary border border-primary/30 rounded-lg text-xs font-bold uppercase"
+                                onclick="updateGraph('time')">Time</button>
+                            <button
+                                class="px-4 py-2 bg-primary/20 text-primary border border-primary/30 rounded-lg text-xs font-bold uppercase"
+                                onclick="updateGraph('water')">Water</button>
+                            <button
+                                class="px-4 py-2 bg-primary/20 text-primary border border-primary/30 rounded-lg text-xs font-bold uppercase"
+                                onclick="updateGraph('profit')">Profit</button>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-white/5 w-full h-[550px] relative">
+                        <canvas id="cropChart" style="display:none;"></canvas>
+                    </div>
+                    <div class="mt-8 flex justify-center gap-4">
+                        <button
+                            class="px-6 py-2.5 bg-surface-variant border border-white/10 rounded-xl text-xs font-bold text-white hover:bg-primary/20 hover:text-primary transition-all shadow-lg"
+                            onclick="filterCrops('all')">📋 All Crops</button>
+                        <button
+                            class="px-6 py-2.5 bg-surface-variant border border-white/10 rounded-xl text-xs font-bold text-white hover:bg-cyan-500/20 hover:text-cyan-400 transition-all shadow-lg"
+                            onclick="filterCrops('low')">💧 Low Water</button>
+                        <button
+                            class="px-6 py-2.5 bg-surface-variant border border-white/10 rounded-xl text-xs font-bold text-white hover:bg-yellow-500/20 hover:text-yellow-400 transition-all shadow-lg"
+                            onclick="filterCrops('high')">💰 High Profit</button>
+                    </div>
+                </div>
+
+                <div id="export-btn-container" style="display: none;"
+                    class="md:col-span-12 mt-12 mb-6 flex justify-center items-center w-full relative z-40">
+                    <button onclick="downloadReport()"
+                        class="bg-primary/10 border border-primary/30 backdrop-blur-3xl px-12 py-4 rounded-full flex items-center gap-3 text-primary text-sm font-black uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(16,185,129,0.15)] hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:bg-primary hover:text-surface transition-all duration-300 active:scale-95 group relative overflow-hidden">
+                        <span
+                            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+                        <span
+                            class="material-symbols-outlined text-xl group-hover:-translate-y-1 group-hover:scale-110 transition-all">download</span>
+                        Export Full Report
+                    </button>
+                </div>
+            </div>
+    </main>
+
+    <!-- ══════════════════════════════════════════════════
+     GLOBAL FOOTER
+══════════════════════════════════════════════════ -->
+    <footer class="global-footer relative z-10 lg:ml-64">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Logo"
+                    class="w-full h-full rounded-full object-cover">
+            </div>
+            <h3 class="text-xl font-black text-white mb-4 tracking-tighter">Uyirnilam AI</h3>
+            <p class="footer-description">
+                The future of Intelligent Farming. Empowering sustainable agriculture through AI-driven insights for
+                Harvest, Market, Pest, and Irrigation management.
+            </p>
+
+            <nav class="footer-nav">
+                <a href="/dashboard" class="footer-link">Dashboard</a>
+                <a href="/irrigation" class="footer-link">Irrigation</a>
+                <a href="/harvest" class="footer-link">Harvest</a>
+                <a href="/pest" class="footer-link">Pest Control</a>
+                <a href="/market" class="footer-link">Market</a>
+            </nav>
+
+            <div class="footer-divider"></div>
+
+            <div class="footer-bottom">
+                <div class="footer-contact">
+                    <a href="tel:+919112260118" class="contact-item">
+                        <span class="material-symbols-outlined">Call</span>
+                        +91 9112260118
+                    </a>
+                    <a href="mailto:sanjayangounder@gmail.com" class="contact-item">
+                        <span class="material-symbols-outlined">Mail</span>
+                        sanjayangounder@gmail.com
+                    </a>
+                </div>
+
+                <div class="footer-social">
+                    <a href="https://www.linkedin.com/in/sanjayan-sankar-gounder-3b2aa6330" target="_blank"
+                        class="social-icon" aria-label="LinkedIn">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                            <path
+                                d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                        </svg>
+                    </a>
+                </div>
+
+                <div class="founder-credit">Developed by Sanjayan Sankar Gounder</div>
+                <div class="copyright text-on-surface-variant/60">© 2026 Uyirnilam AI. All Rights Reserved.</div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('sidebar-hidden');
+            document.getElementById('main-content').classList.toggle('full-width');
+        }
+
+        // ─── DUAL-WRITE STORAGE HELPERS ───────────────────────────────────────
+        // Writes to BOTH sessionStorage and localStorage so data survives
+        // tab navigation AND page reloads / new tabs.
+        function storageSet(key, value) {
+            try { sessionStorage.setItem(key, value); } catch (e) { }
+            try { localStorage.setItem(key, value); } catch (e) { }
+        }
+        // Reads sessionStorage first; falls back to localStorage if null.
+        function storageGet(key) {
+            let v = null;
+            try { v = sessionStorage.getItem(key); } catch (e) { }
+            if (v === null || v === undefined) {
+                try { v = localStorage.getItem(key); } catch (e) { }
+            }
+            return v;
+        }
+        // ──────────────────────────────────────────────────────────────────────
+
+        let allCrops = [];
+        let chart;
+        let currentFilter = 'all';
+        let currentMetric = 'profit';
+        let locationData = { lat: 0, lon: 0, city: 'Your Area', state: 'Your State' };
+        let weatherData = { temperature: 0, humidity: 0, rainfall: 0 };
+        let soilData = 'loamy';
+
+        function safe(val, def = 0) { return (val !== undefined && val !== null) ? val : def; }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    pos => {
+                        const lat = Number(pos.coords.latitude.toFixed(6));
+                        const lon = Number(pos.coords.longitude.toFixed(6));
+                        document.getElementById("coords-input").value = lat + ", " + lon;
+                        locationData.lat = lat;
+                        locationData.lon = lon;
+                        getCityName(lat, lon);
+                        saveFormData();
+                    },
+                    err => {
+                        locationData.lat = 18.52; locationData.lon = 73.85;
+                        document.getElementById("coords-input").value = "18.52, 73.85";
+                        saveFormData();
+                    }
+                );
+            } else {
+                locationData.lat = 18.52; locationData.lon = 73.85;
+                document.getElementById("coords-input").value = "18.52, 73.85";
+                saveFormData();
+            }
+        }
+
+        function saveFormData() {
+            const formData = {
+                coords: document.getElementById("coords-input").value,
+                soil: document.getElementById("soil").value,
+                previous_crop: document.getElementById("previous_crop").value,
+                landSize: document.getElementById("landSize").value,
+                land_type: document.getElementById("land").value,
+                mode: document.querySelector('input[name="rec-mode"]:checked')?.value || 'basic'
+            };
+            storageSet('dashboardFormData', JSON.stringify(formData));
+        }
+
+        function loadFormData() {
+            const savedData = JSON.parse(storageGet('dashboardFormData'));
+            if (savedData) {
+                document.getElementById("coords-input").value = savedData.coords || "";
+                document.getElementById("soil").value = savedData.soil || "loamy";
+                document.getElementById("previous_crop").value = savedData.previous_crop || "";
+                document.getElementById("landSize").value = savedData.landSize || "";
+                document.getElementById("land").value = savedData.land_type || "flat";
+
+                const modeRadio = document.querySelector(`input[name="rec-mode"][value="${savedData.mode}"]`);
+                if (modeRadio) modeRadio.checked = true;
+            }
+
+            const savedCrops = JSON.parse(storageGet('allCropsData'));
+            if (savedCrops && savedCrops.length > 0) {
+                allCrops = savedCrops;
+                document.getElementById('recommendation-card').style.display = '';
+                document.getElementById('alternative-crops').style.display = '';
+                document.getElementById('intelligence-matrix').style.display = '';
+                document.getElementById('export-btn-container').style.display = '';
+                displayCrops(allCrops);
+
+                const savedWeather = JSON.parse(storageGet('weatherData'));
+                if (savedWeather) {
+                    weatherData = savedWeather;
+                    document.getElementById("weather-temp").innerText = safe(weatherData.temperature);
+                    document.getElementById("weather-humidity").innerText = safe(weatherData.humidity) + "%";
+                    document.getElementById("weather-rain").innerText = safe(weatherData.rainfall) + "mm";
+                    document.getElementById("weather-desc").innerText = "Current";
+                }
+
+                setTimeout(() => {
+                    showChart(allCrops, currentMetric, currentFilter);
+                }, 100);
+            }
+        }
+
+        window.addEventListener('load', () => {
+            getLocation();
+            loadFormData();
+
+            // Add event listeners for persistence
+            ['coords-input', 'soil', 'previous_crop', 'landSize', 'land'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('input', saveFormData);
+            });
+            document.querySelectorAll('input[name="rec-mode"]').forEach(radio => {
+                radio.addEventListener('change', saveFormData);
+            });
+        });
+
+        function startLoadingAnimation() {
+            const steps = ['Generating with Uyirnilam AI...', 'Exploring Soil Matrix...', 'Fetching Atmosphere...', 'Activating Neural Layers...'];
+            let i = 0;
+            let text = document.getElementById("loadingText");
+            text.innerText = steps[i++];
+            let interval = setInterval(() => {
+                if (i < steps.length) text.innerText = steps[i++];
+                else clearInterval(interval);
+            }, 1000);
+        }
+
+        function getRecommendation() {
+            let landSizeInputStr = document.getElementById("landSize").value;
+            let prevCrop = document.getElementById("previous_crop").value;
+            if (!landSizeInputStr || !prevCrop) {
+                alert("Please fill out all the details (e.g., Total Acreage and Previous Crop) before proceeding with the analysis.");
+                return;
+            }
+
+            const loading = document.getElementById('loading-state');
+            const recCard = document.getElementById('recommendation-card');
+            const altCrops = document.getElementById('alternative-crops');
+            const matrix = document.getElementById('intelligence-matrix');
+            const weatherCard = document.getElementById('weather-card');
+
+
+
+            loading.classList.remove('hidden');
+            loading.classList.add('flex'); // Ensure flex displays
+            if (weatherCard) weatherCard.style.display = 'none';
+            recCard.style.display = 'none';
+            altCrops.style.display = 'none';
+            matrix.style.display = 'none';
+            document.getElementById('export-btn-container').style.display = 'none';
+
+            startLoadingAnimation();
+
+            let coordsRaw = (document.getElementById("coords-input").value || "").split(',');
+            let latInput = parseFloat(coordsRaw[0] || 18.52);
+            let lonInput = parseFloat(coordsRaw[1] || 73.85);
+            let landSizeInput = parseFloat(landSizeInputStr);
+
+            let modeVal = "basic";
+            let selectedMode = document.querySelector('input[name="rec-mode"]:checked');
+            if (selectedMode) modeVal = selectedMode.value;
+
+            let data = {
+                lat: Number.isFinite(latInput) ? latInput : 18.52,
+                lon: Number.isFinite(lonInput) ? lonInput : 73.85,
+                soil_type: document.getElementById("soil").value,
+                land_type: document.getElementById("land").value,
+                land_size: Number.isFinite(landSizeInput) && landSizeInput > 0 ? landSizeInput : 1,
+                previous_crop: document.getElementById("previous_crop").value,
+                mode: modeVal
+            };
+            soilData = data.soil_type;
+
+            fetch("/api/predict", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "same-origin",
+                body: JSON.stringify(data)
+            })
+                .then(r => {
+                    console.log('📨 API Response Status:', r.status);
+                    if (!r.ok) {
+                        console.error('❌ API Error:', r.statusText);
+                        throw new Error(`HTTP ${r.status}: ${r.statusText}`);
+                    }
+                    return r.json();
+                })
+                .then(data => {
+                    console.log('✅ API Response Received:', data);
+
+                    // ══════════════════════════════════════════════════════════
+                    // SAVE DATA IMMEDIATELY — before the 3s UI animation delay.
+                    // This is the critical fix: data is written NOW so navigation
+                    // to /harvest /irrigation etc. always finds valid values.
+                    // ══════════════════════════════════════════════════════════
+                    weatherData = {
+                        temperature: safe(data.temperature),
+                        humidity: safe(data.humidity),
+                        rainfall: safe(data.rainfall)
+                    };
+                    storageSet('weatherData', JSON.stringify(weatherData));
+
+                    locationData.lat = safe(data.lat, 18.52);
+                    locationData.lon = safe(data.lon, 73.85);
+
+                    allCrops = data.recommended_crops || [];
+                    console.log('🌾 All Crops:', allCrops);
+
+                    if (!allCrops || allCrops.length === 0) {
+                        console.warn('⚠️ No crops received from API, using test data');
+                        allCrops = [
+                            { name: 'rice', score: 95.2, total_water: 12000, total_profit: 500000, time: 4, water: 'High', profit: 'High' },
+                            { name: 'wheat', score: 89.5, total_water: 8000, total_profit: 400000, time: 4, water: 'Medium', profit: 'Medium' },
+                            { name: 'maize', score: 84.1, total_water: 6000, total_profit: 350000, time: 3, water: 'Low', profit: 'Medium' },
+                            { name: 'cotton', score: 78.9, total_water: 9000, total_profit: 450000, time: 6, water: 'Medium', profit: 'Medium' },
+                            { name: 'banana', score: 72.3, total_water: 15000, total_profit: 600000, time: 10, water: 'High', profit: 'High' }
+                        ];
+                    }
+
+                    storageSet('allCropsData', JSON.stringify(allCrops));
+
+                    // Top-5 summary for other pages (name always lowercase)
+                    const top5Crops = allCrops.slice(0, 5).map((crop, index) => ({
+                        name: (crop.name || '').toLowerCase(),
+                        score: crop.score || 0,
+                        totalWater: crop.total_water || 0,
+                        profit: crop.total_profit || 0,
+                        rank: index + 1
+                    }));
+                    storageSet('recommendedCrops', JSON.stringify(top5Crops));
+                    storageSet('landSize', document.getElementById('landSize').value || '1');
+
+                    if (allCrops.length > 0) {
+                        const top = allCrops[0];
+                        const plantingDate = new Date();
+                        plantingDate.setDate(plantingDate.getDate() - 30);
+
+                        storageSet('selectedCrop', JSON.stringify({
+                            name: (top.name || '').toLowerCase(), // ← always lowercase
+                            landSize: landSizeInput,
+                            totalWater: top.total_water || top.water || 0,
+                            totalProfit: top.total_profit || top.profit || 0,
+                            harvestDays: safe(top.time, 0) * 30,
+                            plantedDate: new Date().toISOString().split('T')[0]
+                        }));
+                        storageSet('plantingDate', plantingDate.toISOString());
+                    }
+
+                    // ── Verification log ──────────────────────────────────────
+                    console.log('✅✅✅ CROP DATA SAVED IMMEDIATELY ✅✅✅');
+                    console.log('recommendedCrops:', storageGet('recommendedCrops'));
+                    console.log('selectedCrop:', storageGet('selectedCrop'));
+                    console.log('landSize:', storageGet('landSize'));
+                    console.log('plantingDate:', storageGet('plantingDate'));
+                    // ──────────────────────────────────────────────────────────
+
+                    getCityName(locationData.lat, locationData.lon);
+
+                    // 3-second delay is now ONLY for the UI animation — not data
+                    setTimeout(() => {
+                        loading.classList.add('hidden');
+                        loading.classList.remove('flex');
+                        if (weatherCard) weatherCard.style.display = '';
+                        recCard.style.display = '';
+                        altCrops.style.display = '';
+                        matrix.style.display = '';
+                        document.getElementById('export-btn-container').style.display = '';
+
+                        document.getElementById("weather-temp").innerText = safe(weatherData.temperature);
+                        document.getElementById("weather-humidity").innerText = safe(weatherData.humidity) + "%";
+                        document.getElementById("weather-rain").innerText = safe(weatherData.rainfall) + "mm";
+                        document.getElementById("weather-desc").innerText = "Current";
+
+                        currentFilter = 'all';
+                        currentMetric = 'profit';
+
+                        displayCrops(allCrops);
+                        showChart(allCrops, currentMetric, currentFilter);
+
+                        recCard.scrollIntoView({ behavior: "smooth", block: "start" });
+                        window.uyirnilam.showSuccess('Crop analysis complete! Data saved.');
+                    }, 3000);
+                })
+                .catch(err => {
+                    loading.classList.add('hidden');
+                    loading.classList.remove('flex');
+                    console.error('❌❌❌ API ERROR ❌❌❌', err);
+                    console.error('Error Details:', err.message);
+
+                    // FALLBACK: Save test data and show it in the UI
+                    console.warn('⚠️ Using fallback test data for other pages...');
+                    const testCrops = [
+                        { name: 'rice', score: 95.2, total_water: 12000, total_profit: 500000, time: 4 },
+                        { name: 'wheat', score: 89.5, total_water: 8000, total_profit: 400000, time: 4 },
+                        { name: 'maize', score: 84.1, total_water: 6000, total_profit: 350000, time: 3 },
+                        { name: 'cotton', score: 78.9, total_water: 9000, total_profit: 450000, time: 6 },
+                        { name: 'banana', score: 72.3, total_water: 15000, total_profit: 600000, time: 10 }
+                    ];
+
+                    const top5 = testCrops.slice(0, 5).map((crop, i) => ({
+                        name: crop.name, score: crop.score, totalWater: crop.total_water, profit: crop.total_profit, rank: i + 1
+                    }));
+
+                    storageSet('allCropsData', JSON.stringify(testCrops));
+                    storageSet('recommendedCrops', JSON.stringify(top5));
+                    storageSet('selectedCrop', JSON.stringify({ name: 'rice', landSize: 5, totalWater: 12000, totalProfit: 500000 }));
+                    storageSet('landSize', '5');
+
+                    const pd = new Date();
+                    pd.setDate(pd.getDate() - 30);
+                    storageSet('plantingDate', pd.toISOString());
+
+                    // Show fallback data in UI so the page is not empty
+                    allCrops = testCrops;
+                    weatherData = { temperature: 25, humidity: 60, rainfall: 0 };
+                    document.getElementById("weather-temp").innerText = safe(weatherData.temperature);
+                    document.getElementById("weather-humidity").innerText = safe(weatherData.humidity) + "%";
+                    document.getElementById("weather-rain").innerText = safe(weatherData.rainfall) + "mm";
+                    document.getElementById("weather-desc").innerText = "Sample";
+
+                    recCard.style.display = '';
+                    altCrops.style.display = '';
+                    matrix.style.display = '';
+                    document.getElementById('export-btn-container').style.display = '';
+
+                    displayCrops(allCrops);
+                    showChart(allCrops, currentMetric, currentFilter);
+
+                    console.log('✅ Fallback data saved and rendered.');
+                });
+        }
+
+        function displayCrops(crops) {
+            if (!crops || crops.length === 0) return;
+            let top = crops[0] || {};
+            const cropImages = {
+                grapes: '/static/images/crop/grapes.png',
+                banana: '/static/images/crop/banana.png',
+                rice: '/static/images/crop/rice.png',
+                wheat: '/static/images/crop/wheat.png',
+                maize: '/static/images/crop/maize.png',
+                cotton: '/static/images/crop/cotton.png',
+                mango: '/static/images/crop/mango.png',
+                sugarcane: '/static/images/crop/sugarcane.png',
+                soybean: '/static/images/crop/soybean.png',
+                groundnut: '/static/images/crop/groundnut.png',
+                millet: '/static/images/crop/millet.png',
+                pulses: '/static/images/crop/pulses.png',
+                barley: '/static/images/crop/barley.jpg',
+                oats: '/static/images/crop/oats.png'
+            };
+
+
+
+            let img = cropImages[(top.name || "").toLowerCase()] || 'https://images.unsplash.com/photo-1464226184884-fa280b87c399';
+            document.getElementById("top-crop-img").src = img;
+            document.getElementById("top-crop-confidence").innerText = "Match Confidence: " + safe(top.score).toFixed(1) + "%";
+            document.getElementById("top-crop-bar").style.width = Math.min(Math.max(safe(top.score), 5), 100) + "%";
+            document.getElementById("top-crop-name").innerText = (top.name || "Crop").toUpperCase();
+            document.getElementById("top-crop-profit").innerText = "₹" + safe(top.total_profit || top.profit || 0).toLocaleString();
+            document.getElementById("top-crop-water").innerText = safe(top.total_water || top.water || 0).toLocaleString() + " L";
+            document.getElementById("top-crop-time").innerText = (safe(top.time, 0) * 30) + " Days";
+            document.getElementById("top-crop-desc").innerText = top.ai_message || top.reason || "";
+
+            let altHtml = "";
+            crops.slice(1).forEach(c => {
+                let im = cropImages[(c.name || "").toLowerCase()] || img;
+                let cScore = safe(c.score).toFixed(1);
+                let cProfit = safe(c.total_profit || c.profit || 0);
+                let cWater = safe(c.total_water || c.water || 0);
+                let cTime = safe(c.time, "-");
+                altHtml += `
+        <div class="relative group rounded-2xl overflow-hidden glass-card h-[380px] transition-all duration-500 hover:scale-[1.02] cursor-pointer">
+        <img alt="${c.name}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="${im}"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-surface via-surface/60 to-transparent"></div>
+        <div class="absolute inset-0 p-6 flex flex-col justify-end">
+        <div class="flex justify-between items-start mb-4">
+        <div>
+        <div class="flex items-center gap-1.5 mb-1">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+        <span class="text-primary text-[8px] font-bold uppercase tracking-widest">${cScore}% Match</span>
+        </div>
+        <h3 class="text-2xl font-black text-white leading-none">${(c.name || "").toUpperCase()}</h3>
+        </div>
+        <div class="text-right">
+        <span class="text-xl font-bold text-primary tracking-tighter">₹${cProfit.toLocaleString()}</span>
+        <p class="text-[8px] uppercase text-on-surface-variant font-bold tracking-widest">Profit</p>
+        </div>
+        </div>
+        <div class="space-y-4">
+        <div class="h-1 w-full bg-white/10 rounded-full">
+        <div class="h-full bg-primary rounded-full shadow-[0_0_8px_rgba(16,185,129,0.3)]" style="width: ${cScore}%;"></div>
+        </div>
+        <div class="flex justify-between">
+        <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-sm">water_drop</span>
+        <div><p class="text-xs font-bold text-white">${cWater} L</p><p class="text-[7px] uppercase text-on-surface-variant font-bold">Water</p></div>
+        </div>
+        <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-sm">calendar_today</span>
+        <div><p class="text-xs font-bold text-white">${cTime} D</p><p class="text-[7px] uppercase text-on-surface-variant font-bold">Cycle</p></div>
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>`;
+            });
+            document.getElementById("alternative-crops").innerHTML = altHtml;
+        }
+
+        function getCityName(lat, lon) {
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                .then(r => r.json())
+                .then(data => {
+                    let city = data.address?.city || data.address?.town || data.address?.village || "Your Area";
+                    let state = data.address?.state || "Your State";
+                    locationData.city = city; locationData.state = state;
+
+                    // Unified location update
+                    const locText = `${city}, ${state}`;
+                    const elTop = document.getElementById("top-crop-location");
+                    const elDash = document.getElementById("dashboard-city");
+                    if (elTop) elTop.innerText = locText;
+                    if (elDash) elDash.innerText = locText;
+
+                    // Remove spin animation if active
+                    const syncIcon = document.querySelector('[onclick*="getLocation"] span');
+                    if (syncIcon) syncIcon.classList.remove('animate-spin');
+                }).catch(() => { });
+        }
+
+        function applyFiltersAndRender() {
+            if (!allCrops || allCrops.length === 0) return;
+            let filtered = allCrops;
+            if (currentFilter === "low") filtered = allCrops.filter(c => c.water === "Low" || (c.total_water && c.total_water < 2500) || (c.water && !isNaN(c.water) && Number(c.water) < 2500));
+            if (currentFilter === "high") filtered = allCrops.filter(c => c.profit === "High" || (c.total_profit && c.total_profit > 100000) || (c.profit && !isNaN(c.profit) && Number(c.profit) > 100000));
+            displayCrops(filtered);
+            showChart(filtered, currentMetric, currentFilter);
+        }
+
+        function updateGraph(metricType) {
+            currentMetric = metricType;
+            applyFiltersAndRender();
+        }
+
+        function filterCrops(filterType) {
+            currentFilter = filterType;
+            if (filterType === 'low') currentMetric = 'water';
+            else if (filterType === 'high') currentMetric = 'profit';
+            else if (filterType === 'all') currentMetric = 'profit';
+            applyFiltersAndRender();
+        }
+
+        function showChart(crops, metric = "profit", filter = "all") {
+            let canvas = document.getElementById("cropChart");
+            canvas.style.display = "block";
+            let ctx = canvas.getContext('2d');
+
+            let names = crops.map(c => (c.name || "").toUpperCase());
+            let values = [];
+            let gradientTitle = "";
+
+            let gradient = ctx.createLinearGradient(0, 0, 0, 550);
+
+            if (metric === "profit") {
+                values = crops.map(c => safe(c.total_profit || c.profit || 0));
+                gradientTitle = "ESTIMATED PROFIT (₹)";
+                if (filter === "high") {
+                    gradient.addColorStop(0, 'rgba(234, 179, 8, 0.9)');    // rich gold
+                    gradient.addColorStop(1, 'rgba(234, 179, 8, 0.05)');
+                } else {
+                    gradient.addColorStop(0, 'rgba(16, 185, 129, 0.9)');   // emerald
+                    gradient.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
+                }
+            } else if (metric === "time") {
+                values = crops.map(c => safe(c.time || 0));
+                gradientTitle = "GROWTH CYCLE (DAYS)";
+                gradient.addColorStop(0, 'rgba(239, 68, 68, 0.9)');        // rich crimson
+                gradient.addColorStop(1, 'rgba(239, 68, 68, 0.05)');
+            } else {
+                values = crops.map(c => safe(c.total_water || c.water || 0));
+                gradientTitle = "WATER CONSUMPTION (L)";
+                if (filter === "low") {
+                    gradient.addColorStop(0, 'rgba(6, 182, 212, 0.9)');    // pure cyan
+                    gradient.addColorStop(1, 'rgba(6, 182, 212, 0.05)');
+                } else {
+                    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.9)');   // royal blue
+                    gradient.addColorStop(1, 'rgba(59, 130, 246, 0.05)');
+                }
+            }
+
+            if (chart) chart.destroy();
+
+            let borderColor = gradientTitle.includes("PROFIT") && filter === "high" ? "#fbbf24" :
+                gradientTitle.includes("PROFIT") ? "#10b981" :
+                    gradientTitle.includes("WATER") && filter === "low" ? "#06b6d4" :
+                        gradientTitle.includes("WATER") ? "#3b82f6" : "#ef4444";
+
+            chart = new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: names,
+                    datasets: [{
+                        label: gradientTitle,
+                        data: values,
+                        backgroundColor: gradient,
+                        borderColor: borderColor,
+                        borderWidth: 2,
+                        borderRadius: { topLeft: 12, topRight: 12, bottomLeft: 0, bottomRight: 0 },
+                        hoverBackgroundColor: "rgba(255,255,255,0.2)",
+                        barPercentage: 0.5,
+                        categoryPercentage: 0.8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: "#ffffff", font: { family: "'Plus Jakarta Sans'", size: 14, weight: '900', letterSpacing: 1 } }, onClick: null },
+                        tooltip: { backgroundColor: 'rgba(2, 15, 12, 0.9)', titleFont: { size: 16, family: "'Plus Jakarta Sans'" }, bodyFont: { size: 16, weight: 'bold', family: "'Plus Jakarta Sans'" }, padding: 16, cornerRadius: 16, borderColor: borderColor, borderWidth: 2, displayColors: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: "rgba(255,255,255,0.6)", font: { weight: 'bold', family: "'Plus Jakarta Sans'" }, padding: 10 },
+                            grid: { color: "rgba(255,255,255,0.03)", drawBorder: false }
+                        },
+                        x: {
+                            ticks: { color: "#ffffff", font: { weight: '800', size: 13, family: "'Plus Jakarta Sans'" }, padding: 10 },
+                            grid: { display: false, drawBorder: false }
+                        }
+                    },
+                    animation: { duration: 1500, easing: 'easeOutQuart' },
+                    interaction: { mode: 'index', intersect: false }
+                }
+            });
+        }
+
+        function downloadReport() {
+            generatePDF('Dashboard Report', 'main-content');
+        }
+
+        function previewProfileImage(event) {
+            const input = event.target;
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profile-img').src = e.target.result;
+                    // Logic to persistently upload the newly picked image via backend fetch() goes here
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeProfileImage() {
+            document.getElementById('profile-img').src = `https://ui-avatars.com/api/?name={{ user_name }}&background=042F2E&color=10B981&size=128&bold=true`;
+            // Logic to inform the backend database to clear the profile photo goes here
+        }
+
+        // Bouncing and Blinking Logo Animation logic
+        const brandLogoContainer = document.getElementById('brandLogoContainer');
+        if (brandLogoContainer) {
+            brandLogoContainer.addEventListener('click', function (e) {
+                e.stopPropagation(); // prevent other click events (like closing sidebar immediately if unwanted, though we WANT sidebar to toggle)
+                // Actually the parent has toggleSidebar(), the event will bubble up to it anyway!
+                brandLogoContainer.classList.remove('animate-magic-bounce');
+                void brandLogoContainer.offsetWidth; // Force DOM reflow
+                brandLogoContainer.classList.add('animate-magic-bounce');
+
+                brandLogoContainer.addEventListener('animationend', () => {
+                    brandLogoContainer.classList.remove('animate-magic-bounce');
+                }, { once: true });
+            });
+        }
+    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        // ⚡ ENHANCED NAVIGATION SYSTEM WITH INSTANT PAGE TRANSITIONS ⚡
+        // ═══════════════════════════════════════════════════════════════
+
+        let isNavigating = false;
+        let transitionOverlay = null;
+
+        // Create transition overlay on page load
+        function initTransitionOverlay() {
+            const overlay = document.getElementById('nav-transition-overlay');
+            if (!overlay) {
+                const newOverlay = document.createElement('div');
+                newOverlay.id = 'nav-transition-overlay';
+                newOverlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(135deg, rgba(2, 15, 12, 0.98) 0%, rgba(4, 59, 37, 0.98) 100%);
+                    opacity: 0;
+                    pointer-events: none;
+                    z-index: 9998;
+                    transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    flex-direction: column;
+                `;
+                newOverlay.innerHTML = `
+                    <div style="text-align: center;">
+                        <span class="material-symbols-outlined" style="font-size: 48px; color: #10b981; opacity: 0.8; animation: spin 2s linear infinite; display: inline-block; margin-bottom: 16px;">
+                            settings_b_roll
+                        </span>
+                        <p style="color: #10b981; font-weight: 600; font-size: 14px; margin-top: 8px; letter-spacing: 0.1em; text-transform: uppercase;">
+                            <span id="nav-current-page">Loading</span>...
+                        </p>
+                    </div>
+                `;
+                document.body.appendChild(newOverlay);
+                transitionOverlay = newOverlay;
+            }
+            return transitionOverlay;
+        }
+
+        // Enhanced navTo with smooth transitions
+        function navTo(url, name) {
+            if (isNavigating) return; // Prevent multiple rapid clicks
+            isNavigating = true;
+
+            // Close sidebar on mobile
+            const sidebar = document.getElementById('mainSidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (sidebar && backdrop) {
+                sidebar.classList.remove('sidebar-open');
+                backdrop.classList.remove('visible');
+                document.body.classList.remove('overflow-hidden');
+            }
+
+            // Initialize and show transition overlay
+            const overlay = initTransitionOverlay();
+            const pageNameElement = document.getElementById('nav-current-page');
+            if (pageNameElement) {
+                pageNameElement.textContent = name;
+                pageNameElement.style.animation = 'fadeIn 0.3s ease-in-out';
+            }
+
+            // Fade in the overlay
+            requestAnimationFrame(() => {
+                overlay.style.opacity = '1';
+                overlay.style.pointerEvents = 'auto';
+            });
+
+            // Navigate after brief visual delay (instant feel)
+            setTimeout(() => {
+                window.location.href = url;
+            }, 280);
+        }
+
+        // Enhanced toggleSidebar with smooth animations
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+
+            if (!sidebar || !backdrop) return;
+
+            const isOpen = sidebar.classList.contains('sidebar-open');
+
+            if (isOpen) {
+                // Close animation
+                sidebar.style.animation = 'slideOutLeft 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+                backdrop.style.animation = 'fadeOut 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+
+                setTimeout(() => {
+                    sidebar.classList.remove('sidebar-open');
+                    backdrop.classList.remove('visible');
+                    document.body.classList.remove('overflow-hidden');
+                }, 350);
+            } else {
+                // Open animation
+                sidebar.classList.add('sidebar-open');
+                backdrop.classList.add('visible');
+                document.body.classList.add('overflow-hidden');
+
+                sidebar.style.animation = 'slideInLeft 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+                backdrop.style.animation = 'fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+            }
+        }
+
+        // Add keyboard shortcut for navigation (ESC to close sidebar)
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const sidebar = document.getElementById('mainSidebar');
+                if (sidebar && sidebar.classList.contains('sidebar-open')) {
+                    toggleSidebar();
+                }
+            }
+        });
+
+        // Handle page visibility to reset navigation flag
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                isNavigating = false;
+            }
+        });
+
+        // Initialize transition overlay on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', initTransitionOverlay);
+
+        // Smooth scroll when navigation is complete
+        window.addEventListener('load', () => {
+            const overlay = document.getElementById('nav-transition-overlay');
+            if (overlay && overlay.style.opacity !== '0') {
+                setTimeout(() => {
+                    overlay.style.opacity = '0';
+                    overlay.style.pointerEvents = 'none';
+                    isNavigating = false;
+                }, 100);
+            }
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // 🚀 PERFORMANCE ENHANCEMENTS & PREFETCH SYSTEM
+        // ═══════════════════════════════════════════════════════════════
+
+        // Prefetch navigation pages for instant loading
+        function prefetchPages() {
+            const pages = [
+                '/irrigation',
+                '/harvest',
+                '/pest',
+                '/market'
+            ];
+
+            // Use RequestIdleCallback if available, else fallback to setTimeout
+            const prefetch = (url) => {
+                const link = document.createElement('link');
+                link.rel = 'prefetch';
+                link.href = url;
+                document.head.appendChild(link);
+            };
+
+            if ('requestIdleCallback' in window) {
+                pages.forEach(page => {
+                    requestIdleCallback(() => prefetch(page), { timeout: 2000 });
+                });
+            } else {
+                pages.forEach((page, index) => {
+                    setTimeout(() => prefetch(page), 500 + (index * 200));
+                });
+            }
+        }
+
+        // Initialize prefetch after page loads
+        window.addEventListener('load', prefetchPages);
+
+        // Add hover prefetch - prefetch on sidebar item hover
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('[onclick*="navTo"]');
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', () => {
+                    const href = link.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+                    if (href) {
+                        const prefetchLink = document.createElement('link');
+                        prefetchLink.rel = 'prefetch';
+                        prefetchLink.href = href;
+                        document.head.appendChild(prefetchLink);
+                    }
+                });
+            });
+        });
+
+        // Optimize sidebar sidebar item active state
+        function updateActiveNavItem() {
+            const currentPath = window.location.pathname;
+            const navItems = document.querySelectorAll('[onclick*="navTo"]');
+
+            navItems.forEach(item => {
+                const href = item.getAttribute('onclick')?.match(/'([^']+)'/)?.[1];
+                if (href === currentPath) {
+                    item.classList.add('active');
+                    // Add smooth highlight effect
+                    item.style.background = 'rgba(16, 185, 129, 0.15)';
+                    item.style.color = '#10b981';
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        // Update active item on page load
+        document.addEventListener('DOMContentLoaded', updateActiveNavItem);
+
+        // Enable smooth page transitions with cursor feedback
+        document.addEventListener('click', (e) => {
+            const link = e.target.closest('[onclick*="navTo"]');
+            if (link) {
+                // Add visual feedback immediately
+                link.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    link.style.transform = 'scale(1)';
+                }, 150);
+            }
+        });
+
+        // Add navigation performance tracking
+        if ('performance' in window && 'PerformanceObserver' in window) {
+            try {
+                const observer = new PerformanceObserver((list) => {
+                    const entries = list.getEntries();
+                    entries.forEach((entry) => {
+                        if (entry.duration > 1000) {
+                            console.log(`🐢 Slow navigation detected: ${entry.name} took ${entry.duration.toFixed(2)}ms`);
+                        }
+                    });
+                });
+                observer.observe({ entryTypes: ['navigation'] });
+            } catch (e) {
+                // PerformanceObserver not fully supported
+            }
+        }
+
+        // Enhance sidebar backdrop click to close
+        const backdrop = document.getElementById('sidebarBackdrop');
+        if (backdrop) {
+            backdrop.addEventListener('click', (e) => {
+                if (e.target === backdrop) {
+                    toggleSidebar();
+                }
+            });
+
+            // Add smooth transition
+            backdrop.style.cssText = `
+                transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                opacity: 0;
+                pointer-events: none;
+            `;
+        }
+
+        // Smooth transition for overlay opacity changes
+        const style = document.createElement('style');
+        style.textContent = `
+            #sidebarBackdrop.visible {
+                opacity: 1;
+                pointer-events: auto;
+                background: rgba(0, 0, 0, 0.5);
+            }
+            
+            #mainSidebar.sidebar-open {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+    <!-- ══════════════════════════════════════════════════
+     FLOATING BOTTOM BAR
+    ══════════════════════════════════════════════════ -->
+    <div class="floating-bottom-bar lg:hidden">
+        <!-- Notification Item -->
+        <button onclick="window.location='/notifications#open'" class="bottom-bar-item group">
+            <div class="bottom-bar-bell">
+                <span class="material-symbols-outlined text-[24px]">notifications</span>
+            </div>
+            <span id="bottomBellBadge" class="bottom-bar-badge">{{ notification_count or '0' }}</span>
+        </button>
+
+        <!-- Profile Item (Centered Photo) -->
+        <a href="/profile" class="bottom-bar-item group">
+            <div class="bottom-bar-photo">
+                <img src="{{ user_photo if user_photo else 'https://ui-avatars.com/api/?name=' ~ (user_name or 'Farmer') ~ '&background=042F2E&color=10B981&size=128&bold=true' }}"
+                    alt="Profile" class="w-full h-full object-cover">
+            </div>
+        </a>
+
+        <!-- Dashboard Shortcut -->
+        <a href="/dashboard" class="bottom-bar-item group">
+            <div class="bottom-bar-bell">
+                <span class="material-symbols-outlined text-[24px]">grid_view</span>
+            </div>
+        </a>
+    </div>
+
+    <script>
+        // Auto-detect active sidebar nav item based on current URL
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.sidebar-item-premium').forEach(item => {
+                const onclick = item.getAttribute('onclick');
+                if (onclick && onclick.includes(currentPath)) {
+                    item.classList.remove('sidebar-item-inactive');
+                    item.classList.add('sidebar-cylindrical-highlight', 'text-emerald-400');
+                } else {
+                    item.classList.add('sidebar-item-inactive');
+                    item.classList.remove('sidebar-cylindrical-highlight', 'text-emerald-400');
+                }
+            });
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/uy_header.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pdfGenerator.js') }}?v=1.2"></script>
+</body>
+
+</html>

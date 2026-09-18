@@ -1,0 +1,170 @@
+/* ═══════════════════════════════════════════════════════════ */
+/* MOBILE RESPONSIVE STYLES - Add to all pages */
+/* ═══════════════════════════════════════════════════════════ */
+
+/* Mobile-First Adjustments */
+@media (max-width: 768px) {
+
+    /* Smaller text on mobile */
+    h1 {
+        font-size: 1.75rem !important;
+    }
+
+    h2 {
+        font-size: 1.25rem !important;
+    }
+
+    h3 {
+        font-size: 1rem !important;
+    }
+
+    /* Smaller cards */
+    .glass-card {
+        padding: 1rem !important;
+    }
+
+    /* Touch-friendly buttons */
+    button,
+    a.button {
+        min-height: 44px !important;
+        padding: 0.75rem 1rem !important;
+    }
+
+    /* Upload zone on mobile */
+    .upload-zone {
+        min-height: 200px !important;
+        padding: 1.5rem !important;
+    }
+
+    /* Charts smaller on mobile */
+    canvas {
+        max-height: 200px !important;
+    }
+
+    /* Grid columns stack on mobile */
+    .grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Sidebar sliding logic on mobile */
+    aside {
+        display: flex !important;
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        height: 100vh !important;
+        width: 280px !important;
+        z-index: 100 !important;
+        transform: translateX(-100%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        background: #020f0c !important;
+        padding-top: 100px !important;
+    }
+
+    aside.sidebar-open {
+        transform: translateX(0);
+        box-shadow: 20px 0 50px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Backdrop overlay */
+    .sidebar-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 90;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.4s ease;
+    }
+
+    .sidebar-backdrop.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* Adjust main content */
+    main {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+    }
+
+    /* Mobile Menu Button - defined in HTML but styled here */
+    .mobile-menu-btn {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: rgba(16, 185, 129, 0.05);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        cursor: pointer;
+        z-index: 110;
+        transition: all 0.3s ease;
+        margin-right: 12px;
+    }
+
+    .mobile-menu-btn:active {
+        background: rgba(16, 185, 129, 0.15);
+        transform: scale(0.95);
+    }
+
+    /* Smaller countdown digits */
+    .countdown-digit {
+        font-size: 2rem !important;
+    }
+
+    /* Image preview smaller */
+    #previewImage {
+        max-height: 250px !important;
+    }
+
+    /* Smaller spacing */
+    .space-y-6>*+* {
+        margin-top: 1rem !important;
+    }
+
+    /* Better crop cards on mobile */
+    .crop-card {
+        margin-bottom: 1rem;
+    }
+
+    /* Stack treatment cards */
+    .treatment-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Tablet adjustments (768px to 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+
+    /* Sidebar smaller but visible on tablet desktop mode */
+    aside {
+        display: flex !important;
+        width: 200px !important;
+        transform: translateX(0) !important;
+        position: fixed !important;
+    }
+
+    main {
+        margin-left: 200px !important;
+    }
+    
+    .mobile-menu-btn {
+        display: none !important;
+    }
+}
+
+/* Touch-friendly everywhere */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent horizontal scroll */
+body {
+    overflow-x: hidden;
+}

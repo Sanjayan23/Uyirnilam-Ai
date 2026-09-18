@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>AI Pest & Disease Control | Uyirnilam AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-responsive.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/popup.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header_styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+    <script>
+        // FOUC Mitigation
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.body.classList.add('reveal');
+            }, 100);
+        });
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (!sidebar || !backdrop) return;
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('flex');
+            backdrop.classList.toggle('visible');
+        }
+    </script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#10b981",
+                        "surface": "#020f0c",
+                        "surface-variant": "#041c17",
+                        "on-surface": "#ecfdf5",
+                        "on-surface-variant": "#94a3b8"
+                    },
+                    fontFamily: { "sans": ["'Plus Jakarta Sans'", "sans-serif"] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: #020f0c;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #ecfdf5;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .upload-zone {
+            border: 3px dashed rgba(16, 185, 129, 0.3);
+            transition: all 0.3s;
+            min-height: 350px;
+        }
+
+        .upload-zone.dragover {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            transform: scale(1.02);
+        }
+
+        .scanner-line {
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #10b981, transparent);
+            position: absolute;
+            top: 0;
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(350px);
+            }
+        }
+
+        .spinner {
+            border: 4px solid rgba(16, 185, 129, 0.1);
+            border-top: 4px solid #10b981;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .remove-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.2s;
+        }
+
+        .remove-icon:hover {
+            background: #ef4444;
+            transform: scale(1.1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .cloak {
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .reveal {
+            opacity: 1 !important;
+        }
+
+        .power-point-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: slide-up 0.5s ease-out forwards;
+        }
+
+        /* ── Center-align pest content to match Harvest page ── */
+        .pest-content-centered {
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @keyframes slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased overflow-x-hidden cloak">
+    <!-- ══════════ GLOBAL HEADER START ══════════ -->
+    <header class="uy-header">
+        <div class="uy-header-left">
+            <button type="button" class="mobile-menu-btn lg:hidden" onclick="toggleSidebar()" aria-label="Open Menu">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+            <div class="uy-logo-ring">
+                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Uyirnilam AI" class="uy-logo-img"
+                    onerror="this.src='https://ui-avatars.com/api/?name=U&background=e8c351&color=020f0c&size=64&bold=true'" />
+            </div>
+            <span class="uy-brand-name">Uyirnilam AI</span>
+        </div>
+        <div class="uy-search-wrap" id="uySearchWrap">
+            <div class="uy-search-box" id="uySearchBox">
+                <span class="uy-search-icon" id="uySearchToggle">
+                    <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+                        <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.8" />
+                        <path d="M15 15l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                    </svg>
+                </span>
+                <input type="text" id="uySearchInput" class="uy-search-input"
+                    placeholder="Search crops, pages, diseases…" autocomplete="off" spellcheck="false" />
+                <span class="uy-search-clear" id="uySearchClear">
+                    <svg width="12" height="12" viewBox="0 0 12 12">
+                        <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" />
+                    </svg>
+                </span>
+            </div>
+            <div class="uy-search-dropdown" id="uySearchDropdown"></div>
+        </div>
+        <div class="uy-header-right">
+            <a href="/notifications"
+                class="uy-icon-btn {% if notification_count and notification_count > 0 %}uy-ringing{% endif %}"
+                title="Notifications">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M12.02 2.91C8.72 2.91 6.03 5.59 6.03 8.89V13.01C6.03 13.72 5.74 14.73 5.39 15.26L4.1 17.21C3.31 18.4 3.86 19.75 5.32 19.75H18.72C20.18 19.75 20.73 18.4 19.94 17.21L18.65 15.26C18.3 14.73 18.01 13.72 18.01 13.01V8.89C18.01 5.6 15.31 2.91 12.02 2.91Z"
+                        stroke="currentColor" stroke-width="1.8" stroke-miterlimit="10" stroke-linecap="round" />
+                    <path d="M13.87 3.2C13.56 3.11 13.24 3.04 12.91 3" stroke="currentColor" stroke-width="1.8"
+                        stroke-miterlimit="10" stroke-linecap="round" />
+                    <path
+                        d="M15.02 20.06C15.02 21.71 13.67 23.06 12.02 23.06C11.2 23.06 10.45 22.73 9.9 22.18C9.35 21.63 9.02 20.88 9.02 20.06"
+                        stroke="currentColor" stroke-width="1.8" stroke-miterlimit="10" />
+                </svg>
+                {% if notification_count and notification_count > 0 %}<span class="uy-badge">{{ notification_count if
+                    notification_count < 100 else '99+' }}</span>{% endif %}
+            </a>
+            <a href="/profile" class="uy-profile-btn" title="My Profile">
+                {% if user_photo %}<img src="{{ user_photo }}" alt="Profile" class="uy-avatar-img" />{% else %}<div
+                    class="uy-avatar-initials">{{ (user_name or 'F')[0].upper() }}</div>{% endif %}
+                <div class="uy-profile-info">
+                    <span class="uy-profile-name">{{ user_name or 'Farmer' }}</span>
+                    <span class="uy-profile-role">Verified Farmer</span>
+                </div>
+            </a>
+            <a href="/profile" class="uy-icon-btn" title="Settings">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                        stroke="currentColor" stroke-width="1.8" />
+                </svg>
+            </a>
+            <a href="/logout" class="uy-icon-btn uy-logout-btn" title="Logout">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                    <polyline points="16 17 21 12 16 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    <line x1="21" y1="12" x2="9" y2="12" stroke="currentColor" stroke-width="1.8"
+                        stroke-linecap="round" />
+                </svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- Sidebar Backdrop -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+
+    <aside id="mainSidebar"
+        class="hidden lg:flex flex-col fixed left-0 top-0 h-full w-64 bg-surface-variant/30 z-40 bg-[radial-gradient(circle_at_left,_rgba(16,185,129,0.08),_transparent_50%)]">
+        <div class="relative w-full h-full flex flex-col items-center justify-center">
+            <div
+                class="absolute inset-0 bg-gradient-to-br from-emerald-950/40 via-green-950/20 to-black/60 shadow-[inset_0_0_100px_rgba(0,0,0,0.8)]">
+            </div>
+            <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
+                style="background-image: radial-gradient(#10b981 1px, transparent 1px); background-size: 30px 30px;">
+            </div>
+            <div
+                class="absolute inset-0 bg-gradient-to-r from-[#e8c351]/10 via-emerald-500/5 to-transparent opacity-30 animate-pulse">
+            </div>
+            <div
+                class="absolute top-0 right-0 w-3 h-3 bg-emerald-400 rounded-bl-full shadow-[0_0_20px_rgba(16,185,129,0.9)] z-20">
+            </div>
+            <div
+                class="absolute bottom-0 left-0 w-3 h-3 bg-[#e8c351] rounded-tr-full shadow-[0_0_20px_rgba(232,195,81,0.9)] z-20">
+            </div>
+            <div class="relative z-10 w-full px-6 pt-24 flex flex-col items-center gap-12">
+                <div class="text-center group cursor-pointer">
+                    <div class="flex justify-center mb-6">
+                        <span
+                            class="material-symbols-outlined text-[#e8c351] text-5xl animate-bounce drop-shadow-[0_0_15px_rgba(232,195,81,0.5)]">wb_sunny</span>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-xl font-black leading-tight tracking-tighter uppercase">
+                            <span
+                                class="bg-gradient-to-r from-[#ffd700] via-[#e8c351] to-[#ffe082] bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(232,195,81,0.9)]">
+                                Smart Farming,
+                            </span>
+                        </p>
+                        <p class="text-xl font-black leading-tight tracking-tighter uppercase">
+                            <span
+                                class="bg-gradient-to-r from-emerald-300 via-green-300 to-emerald-400 bg-clip-text text-transparent drop-shadow-[0_0_12px_rgba(16,185,129,0.9)]">
+                                Bright Future
+                            </span>
+                        </p>
+                    </div>
+                    <div
+                        class="mt-8 h-0.5 w-24 mx-auto bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent rounded-full">
+                    </div>
+                </div>
+                <nav class="w-full">
+                    <ul class="space-y-4">
+                        <li><a href="javascript:void(0)" onclick="navTo('/dashboard', 'Dashboard')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:rotate-12 transition-transform">grid_view</span>
+                                <span
+                                    class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Dashboard</span>
+                            </a></li>
+                        <li><a href="javascript:void(0)" onclick="navTo('/irrigation', 'Irrigation')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:scale-110 transition-transform">water_drop</span>
+                                <span
+                                    class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Irrigation</span>
+                            </a></li>
+                        <li><a href="javascript:void(0)" onclick="navTo('/harvest', 'Harvest')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:-rotate-12 transition-transform">agriculture</span>
+                                <span
+                                    class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Harvest</span>
+                            </a></li>
+                        <li><a href="javascript:void(0)" onclick="navTo('/pest', 'Pest Control')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:tada transition-transform">pest_control</span>
+                                <span class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Pest
+                                    Control</span>
+                            </a></li>
+                        <li><a href="javascript:void(0)" onclick="navTo('/market', 'Market Trends')"
+                                class="sidebar-item-premium sidebar-item-inactive group/nav">
+                                <span
+                                    class="material-symbols-outlined text-2xl group-hover/nav:translate-y--0.5 transition-transform">trending_up</span>
+                                <span class="text-sm font-black uppercase tracking-widest whitespace-nowrap">Market
+                                    Trends</span>
+                            </a></li>
+                    </ul>
+                </nav>
+
+            </div>
+        </div>
+    </aside>
+
+    <!-- ══════════════════════════════════════════════════
+     MAIN CONTENT
+    ══════════════════════════════════════════════════ -->
+    <main id="main-content" class="lg:ml-64 layout-main-wrapper">
+        <div class="page-container">
+
+            <!-- ── Page Header - UNCHANGED ── -->
+            <section class="page-section">
+                <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
+                    <div class="flex flex-col md:flex-row md:items-center items-start gap-4">
+                        <div
+                            class="relative w-16 h-16 flex items-center justify-center bg-red-400/10 rounded-2xl shadow-[0_0_20px_rgba(248,113,113,0.1)] shrink-0">
+                            <span class="material-symbols-outlined text-red-400 text-4xl animate-zigzag">pest_control</span>
+                            <div class="absolute inset-0 bg-red-400/5 blur-xl rounded-full animate-pulse"></div>
+                        </div>
+                        <div class="w-full">
+                            <h1
+                                class="text-3xl md:text-5xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 drop-shadow-[0_4px_15px_rgba(248,113,113,0.3)]">
+                                AI Pest & Disease Control</h1>
+                            <p id="pestSubtitle" class="animated-subtitle text-sm md:text-base mt-2">Pest & Disease Detection with AI
+                                Treatment Plans</p>
+                        </div>
+                    </div>
+                    <!-- Export Report Button -->
+                    <button onclick="generatePDF('Pest Control Report', 'main-content')"
+                            class="group flex items-center justify-center gap-2 bg-surface border border-white/10 hover:border-red-400/50 hover:bg-red-400/10 text-white font-black text-xs uppercase tracking-widest px-5 py-3 rounded-xl shadow-[0_0_15px_rgba(248,113,113,0.05)] transition-all shrink-0 mt-4 md:mt-0 w-full md:w-auto self-start">
+                        <span class="material-symbols-outlined text-[18px] group-hover:-translate-y-0.5 group-hover:scale-110 transition-transform">download</span>
+                        Export PDF
+                    </button>
+                </div>
+                <div class="w-full mt-6">
+                    <div class="power-points-container"
+                            style="--icon-color-start:#f87171;--icon-color-end:#fb923c;--icon-glow:rgba(248,113,113,0.45);gap:1.5rem;margin-top:0.5rem;">
+                            <div class="power-point-item flex-shrink-0">
+                                <span class="material-symbols-outlined shrink-0" style="color:#f87171;">biotech</span>
+                                <span class="point-text">Instant Diagnosis</span>
+                            </div>
+                            <div class="power-point-divider hidden md:block"></div>
+                            <div class="power-point-item flex-shrink-0">
+                                <span class="material-symbols-outlined shrink-0" style="color:#f87171;">eco</span>
+                                <span class="point-text">Organic Remedies</span>
+                            </div>
+                            <div class="power-point-divider hidden md:block"></div>
+                            <div class="power-point-item flex-shrink-0">
+                                <span class="material-symbols-outlined shrink-0" style="color:#f87171;">science</span>
+                                <span class="point-text">Chemical Solutions</span>
+                            </div>
+                            <div class="power-point-divider hidden md:block"></div>
+                            <div class="power-point-item flex-shrink-0">
+                                <span class="material-symbols-outlined shrink-0" style="color:#f87171;">shield</span>
+                                <span class="point-text">Prevention First</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 hidden md:flex items-center gap-2 glass-card px-4 py-2 rounded-xl w-fit">
+                            <span class="pulse-dot w-2 h-2 bg-emerald-400 rounded-full"></span>
+                            <span class="text-[10px] text-on-surface-variant uppercase font-black tracking-[0.2em]">AI
+                                Engine Status: <span class="text-emerald-400">ACTIVE</span></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════════════════
+             NEW: SYSTEM NOTIFICATION BANNERS
+            ════════════════════════════════════════════ -->
+            <div class="pest-content-centered">
+
+            <!-- Restored from storage banner -->
+            <div id="restoredBanner"
+                class="hidden slide-down mb-6 glass-card rounded-2xl p-4 border border-blue-500/30 bg-blue-500/5 flex items-center gap-3">
+                <span class="material-symbols-outlined text-blue-400">history</span>
+                <div class="flex-1">
+                    <p class="text-sm font-bold text-blue-300">Previous analysis restored</p>
+                    <p class="text-xs text-on-surface-variant">Your last scan results are shown below. Upload a new
+                        image to run a fresh analysis.</p>
+                </div>
+                <button onclick="document.getElementById('restoredBanner').classList.add('hidden')"
+                    class="text-on-surface-variant hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-sm">close</span>
+                </button>
+            </div>
+
+            <!-- Analysis unavailable banner -->
+            <div id="apiFallbackBanner"
+                class="hidden slide-down mb-6 glass-card rounded-2xl p-4 border border-yellow-500/30 bg-yellow-500/5 flex items-center gap-3">
+                <span class="material-symbols-outlined text-yellow-400">offline_bolt</span>
+                <div class="flex-1">
+                    <p class="text-sm font-bold text-yellow-300">Analysis unavailable</p>
+                    <p class="text-xs text-on-surface-variant">The AI detection service could not complete the scan. No
+                        diagnosis was generated. Try again with a clear image of the affected plant.</p>
+                </div>
+                <button onclick="document.getElementById('apiFallbackBanner').classList.add('hidden')"
+                    class="text-on-surface-variant hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-sm">close</span>
+                </button>
+            </div>
+
+            <!-- ── Upload + Sidebar Grid - UNCHANGED STRUCTURE ── -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-10">
+                <div class="lg:col-span-7">
+                    <div class="glass-card rounded-2xl p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-2.5">
+                                <span class="material-symbols-outlined text-primary">upload_file</span>
+                                <h2 class="text-xl font-bold text-white">Upload Plant/Crop Image</h2>
+                            </div>
+                            <span class="text-xs text-on-surface-variant bg-white/5 px-3 py-1 rounded-full">Claude
+                                Vision AI</span>
+                        </div>
+
+                        <div id="uploadZone"
+                            class="upload-zone rounded-2xl flex flex-col items-center justify-center p-8 relative overflow-hidden">
+                            <input type="file" id="fileInput" accept="image/*" class="hidden"
+                                onchange="handleImageUpload(event)">
+
+                            <div id="uploadPrompt" class="text-center cursor-pointer"
+                                onclick="document.getElementById('fileInput').click()">
+                                <span
+                                    class="material-symbols-outlined text-primary text-8xl block mb-6">add_photo_alternate</span>
+                                <h3 class="text-2xl font-bold text-white mb-3">Drop Image Here or Click to Upload</h3>
+                                <p class="text-sm text-on-surface-variant mb-6">Upload a clear photo of the affected
+                                    plant</p>
+                                <div
+                                    class="flex items-center justify-center gap-4 text-xs text-on-surface-variant pointer-events-none">
+                                    <div class="flex items-center gap-1"><span
+                                            class="material-symbols-outlined text-sm text-emerald-400">check_circle</span><span>JPG,
+                                            PNG, WebP</span></div>
+                                    <div class="flex items-center gap-1"><span
+                                            class="material-symbols-outlined text-sm text-emerald-400">check_circle</span><span>Max
+                                            10MB</span></div>
+                                    <div class="flex items-center gap-1"><span
+                                            class="material-symbols-outlined text-sm text-emerald-400">check_circle</span><span>Clear
+                                            photo preferred</span></div>
+                                </div>
+                            </div>
+
+                            <div id="uploadedPreview" class="hidden w-full relative">
+                                <div class="remove-icon" onclick="resetUpload(); event.stopPropagation();">
+                                    <span class="material-symbols-outlined">close</span>
+                                </div>
+                                <img id="previewImage" src="" alt="Uploaded"
+                                    class="w-full max-h-[400px] object-contain rounded-xl mb-4">
+                                <div class="flex gap-3">
+                                    <button onclick="analyzeImage(); event.stopPropagation();"
+                                        class="flex-1 flex items-center justify-center gap-2 bg-primary text-black px-6 py-4 rounded-xl font-bold text-lg hover:bg-primary/80 transition-all">
+                                        <span class="material-symbols-outlined text-2xl">psychology</span>
+                                        Analyze with AI
+                                    </button>
+                                    <button onclick="resetUpload(); event.stopPropagation();"
+                                        class="flex items-center justify-center gap-2 bg-red-500/20 text-red-400 px-6 py-4 rounded-xl font-bold hover:bg-red-500/30 transition-all">
+                                        <span class="material-symbols-outlined">refresh</span>
+                                        Upload New
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Scanning animation - UNCHANGED -->
+                            <div id="scanningAnimation"
+                                class="hidden absolute inset-0 bg-black/90 flex flex-col items-center justify-center z-30">
+                                <div class="scanner-line"></div>
+                                <div class="spinner mb-6"></div>
+                                <h3 class="text-xl font-bold text-white mb-2 tracking-tight">🔬 AI Diagnostic
+                                    Analysis...</h3>
+                                <p class="text-sm text-emerald-400 mb-6 font-medium animate-pulse" id="scanningStatus">
+                                    Initializing AI engine...</p>
+                                <div class="w-64 h-2 bg-white/10 rounded-full overflow-hidden border border-white/5">
+                                    <div id="scanProgress"
+                                        class="h-full bg-gradient-to-r from-primary to-emerald-300 rounded-full transition-all duration-300"
+                                        style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 space-y-10">
+                    <!-- AI Engine Stats - UNCHANGED -->
+                    <div
+                        class="glass-card rounded-2xl p-6 bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20">
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="material-symbols-outlined text-emerald-400 text-3xl">auto_awesome</span>
+                            <h3 class="text-lg font-bold text-white">Uyirnilam AI Engine</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-on-surface-variant">Detection Accuracy</span>
+                                <span class="text-emerald-400 font-bold">92.8%</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                                <div class="h-full bg-emerald-400 rounded-full" style="width: 93%"></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 pt-2">
+                                <div class="p-3 rounded-xl bg-white/5 text-center">
+                                    <p class="text-[10px] text-on-surface-variant uppercase mb-1">Crops Supported</p>
+                                    <p class="text-sm font-bold text-white">10+</p>
+                                </div>
+                                <div class="p-3 rounded-xl bg-white/5 text-center">
+                                    <p class="text-[10px] text-on-surface-variant uppercase mb-1">Disease Database</p>
+                                    <p class="text-sm font-bold text-white">32+</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Disease Causes Section -->
+                    <div id="diseaseCausesSection"
+                        class="hidden glass-card rounded-2xl p-6 border border-yellow-500/20 bg-yellow-500/5 transition-all duration-500">
+                        <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-yellow-400">warning</span>
+                            Disease Causes
+                        </h3>
+                        <ul id="causesList" class="space-y-2"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ════════════════════════════════════════════
+             RESULTS SECTION — Enhanced, same visual design
+            ════════════════════════════════════════════ -->
+            <div id="resultsSection" class="hidden space-y-8 result-fade-in">
+
+                <!-- Diagnosis Header Card -->
+                <div
+                    class="glass-card rounded-2xl p-8 border-2 border-primary/30 bg-gradient-to-br from-emerald-500/5 to-teal-500/5">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-16 h-16 rounded-2xl bg-primary/20 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+                                <span class="material-symbols-outlined text-primary text-4xl">verified</span>
+                            </div>
+                            <div>
+                                <h2 class="text-3xl font-black text-white tracking-tight">Diagnosis Confirmed</h2>
+                                <p class="text-on-surface-variant">AI-powered disease detection for <span
+                                        id="analysisCropContext" class="text-primary font-bold">--</span></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <!-- NEW: Analysis Source Badge -->
+                            <div id="analysisSourceBadge"
+                                class="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10">
+                            </div>
+                            <button onclick="resetAndAnalyzeNew()"
+                                class="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold flex items-center gap-2 transition-all">
+                                <span class="material-symbols-outlined">refresh</span>New Analysis
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-6 rounded-2xl bg-white/5 border border-white/5">
+                            <p class="text-[10px] text-on-surface-variant uppercase tracking-widest mb-2 font-bold">
+                                Detected Disease</p>
+                            <h3 class="text-2xl font-black text-white mb-1" id="detectedDisease">--</h3>
+                            <p class="text-xs text-primary font-bold" id="diseaseType">--</p>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-white/5 border border-white/5">
+                            <p class="text-[10px] text-on-surface-variant uppercase tracking-widest mb-2 font-bold">
+                                Severity Level</p>
+                            <h3 class="text-2xl font-black" id="severityLevel">--</h3>
+                            <p class="text-xs text-on-surface-variant" id="severityDesc">Assessment complete</p>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-white/5 border border-white/5">
+                            <p class="text-[10px] text-on-surface-variant uppercase tracking-widest mb-2 font-bold">AI
+                                Confidence</p>
+                            <div class="flex items-center gap-3">
+                                <h3 class="text-3xl font-black text-emerald-400" id="confidencePercent">--</h3>
+                                <div class="flex-1 h-3 bg-white/10 rounded-full overflow-hidden border border-white/5">
+                                    <div id="confidenceBar"
+                                        class="h-full bg-emerald-400 rounded-full transition-all duration-700"
+                                        style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NEW: AI Visual Findings (what the AI actually saw) -->
+                    <div class="ai-findings-box hidden mt-6 p-4 rounded-2xl bg-blue-500/5 border border-blue-500/20">
+                        <div class="flex items-start gap-3">
+                            <span
+                                class="material-symbols-outlined text-blue-400 text-sm mt-0.5 shrink-0">visibility</span>
+                            <div>
+                                <p class="text-[10px] text-blue-400 uppercase font-black tracking-widest mb-1">AI Visual
+                                    Findings</p>
+                                <p id="aiVisualFindings" class="text-sm text-white/80 leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detailed Analysis Grid - UNCHANGED STRUCTURE -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Left Column -->
+                    <div class="space-y-8">
+                        <!-- Disease Information -->
+                        <div class="glass-card rounded-2xl p-6">
+                            <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-blue-400">info</span>
+                                Disease Information
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-xs text-on-surface-variant uppercase tracking-widest mb-2">
+                                        Description</p>
+                                    <p class="text-sm text-white leading-relaxed" id="diseaseDescription">--</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-on-surface-variant uppercase tracking-widest mb-2">Symptoms
+                                        Observed</p>
+                                    <ul id="symptomsList" class="space-y-2"></ul>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="p-4 rounded-xl bg-white/5">
+                                        <p class="text-[10px] text-on-surface-variant uppercase mb-1">Primary Cause</p>
+                                        <p class="text-sm font-bold text-white" id="diseaseCause">--</p>
+                                    </div>
+                                    <div class="p-4 rounded-xl bg-white/5">
+                                        <p class="text-[10px] text-on-surface-variant uppercase mb-1">Spread Method</p>
+                                        <p class="text-sm font-bold text-white" id="diseaseSpread">--</p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-on-surface-variant uppercase tracking-widest mb-2">Affected
+                                        Parts</p>
+                                    <div id="affectedPartsList" class="flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Organic Solutions -->
+                        <div
+                            class="glass-card rounded-2xl p-6 border-2 border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 to-teal-500/5">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-emerald-400">eco</span>
+                                    Organic Solutions
+                                </h3>
+                                <span
+                                    class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-widest">ECO-FRIENDLY</span>
+                            </div>
+                            <div id="organicTreatment" class="space-y-4"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-8">
+                        <!-- Chemical Solutions -->
+                        <div
+                            class="glass-card rounded-2xl p-6 border-2 border-orange-500/30 bg-gradient-to-br from-orange-500/10 to-red-500/5">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-orange-400">science</span>
+                                    Chemical Solutions
+                                </h3>
+                                <span
+                                    class="px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 text-[10px] font-bold tracking-widest">FAST-ACTING</span>
+                            </div>
+                            <div id="chemicalTreatment" class="space-y-4"></div>
+                        </div>
+
+                        <!-- Prevention Methods -->
+                        <div class="glass-card rounded-2xl p-6 border border-blue-500/20">
+                            <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                                <span class="material-symbols-outlined text-blue-400">shield</span>
+                                Prevention Strategies
+                            </h3>
+                            <div id="preventionTips" class="space-y-3"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /resultsSection -->
+            </div><!-- /pest-content-centered -->
+        </div>
+    </main>
+
+    <!-- ══════════════════════════════════════════════════
+     FOOTER - UNCHANGED
+    ══════════════════════════════════════════════════ -->
+    <footer class="global-footer relative z-10 lg:ml-64">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Logo"
+                    class="w-full h-full rounded-full object-cover">
+            </div>
+            <h3 class="text-xl font-black text-white mb-4 tracking-tighter">Uyirnilam AI</h3>
+            <p class="footer-description">The future of Intelligent Farming. Empowering sustainable agriculture through
+                AI-driven insights for Harvest, Market, Pest, and Irrigation management.</p>
+            <nav class="footer-nav">
+                <a href="/dashboard" class="footer-link">Dashboard</a>
+                <a href="/irrigation" class="footer-link">Irrigation</a>
+                <a href="/harvest" class="footer-link">Harvest</a>
+                <a href="/pest" class="footer-link">Pest Control</a>
+                <a href="/market" class="footer-link">Market</a>
+            </nav>
+            <div class="footer-divider"></div>
+            <div class="footer-bottom">
+                <div class="footer-contact">
+                    <a href="tel:+919112260118" class="contact-item"><span
+                            class="material-symbols-outlined">Call</span>+91 9112260118</a>
+                    <a href="mailto:sanjayangounder@gmail.com" class="contact-item"><span
+                            class="material-symbols-outlined">Mail</span>sanjayangounder@gmail.com</a>
+                </div>
+                <div class="footer-social">
+                    <a href="https://www.linkedin.com/in/sanjayan-sankar-gounder-3b2aa6330" target="_blank"
+                        class="social-icon" aria-label="LinkedIn">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                            <path
+                                d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                        </svg>
+                    </a>
+                </div>
+                <div class="founder-credit">Developed by Sanjayan Sankar Gounder</div>
+                <div class="copyright text-on-surface-variant/60">© 2026 Uyirnilam AI. All Rights Reserved.</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/pest_data.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pest_control.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/nav-enhanced.js') }}"></script>
+    <script>
+        // Auto-detect active sidebar nav item based on current URL
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.sidebar-item-premium').forEach(item => {
+                const onclick = item.getAttribute('onclick');
+                if (onclick && onclick.includes(currentPath)) {
+                    item.classList.remove('sidebar-item-inactive');
+                    item.classList.add('sidebar-cylindrical-highlight', 'text-emerald-400');
+                } else {
+                    item.classList.add('sidebar-item-inactive');
+                    item.classList.remove('sidebar-cylindrical-highlight', 'text-emerald-400');
+                }
+            });
+        });
+    </script>
+    <script src="{{ url_for('static', filename='js/popup.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/uy_header.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pdfGenerator.js') }}?v=1.2"></script>
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+</body>
+
+</html>

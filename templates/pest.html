@@ -421,6 +421,28 @@
             ════════════════════════════════════════════ -->
             <div class="pest-content-centered">
 
+            <div id="activeCropContext" class="mb-6 glass-card rounded-2xl p-5 border border-primary/30 bg-primary/5">
+                <div id="activeCropPresent" class="hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-3xl">local_florist</span>
+                        <div>
+                            <p class="text-[10px] text-primary uppercase font-black tracking-widest">Active Crop</p>
+                            <p id="activeCropName" class="text-xl font-black text-white">--</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-on-surface-variant">Your Dashboard selection will be used as scan context.</p>
+                </div>
+                <div id="noActiveCrop" class="hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <p class="text-sm font-bold text-yellow-300">No Active Crop</p>
+                        <p class="text-xs text-on-surface-variant mt-1">Select a recommended crop or add your own from the Dashboard before scanning.</p>
+                    </div>
+                    <a href="/dashboard" class="shrink-0 px-4 py-2.5 rounded-xl bg-primary text-surface text-xs font-black uppercase tracking-widest text-center hover:bg-primary/80 transition-all">
+                        Go to Dashboard
+                    </a>
+                </div>
+            </div>
+
             <!-- Restored from storage banner -->
             <div id="restoredBanner"
                 class="hidden slide-down mb-6 glass-card rounded-2xl p-4 border border-blue-500/30 bg-blue-500/5 flex items-center gap-3">
@@ -538,13 +560,6 @@
                             <h3 class="text-lg font-bold text-white">Uyirnilam AI Engine</h3>
                         </div>
                         <div class="space-y-4">
-                            <div class="flex justify-between items-center text-sm">
-                                <span class="text-on-surface-variant">Detection Accuracy</span>
-                                <span class="text-emerald-400 font-bold">92.8%</span>
-                            </div>
-                            <div class="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                <div class="h-full bg-emerald-400 rounded-full" style="width: 93%"></div>
-                            </div>
                             <div class="grid grid-cols-2 gap-4 pt-2">
                                 <div class="p-3 rounded-xl bg-white/5 text-center">
                                     <p class="text-[10px] text-on-surface-variant uppercase mb-1">Crops Supported</p>
@@ -597,7 +612,7 @@
                             </div>
                             <button onclick="resetAndAnalyzeNew()"
                                 class="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold flex items-center gap-2 transition-all">
-                                <span class="material-symbols-outlined">refresh</span>New Analysis
+                                <span class="material-symbols-outlined">refresh</span>Recheck Crop
                             </button>
                         </div>
                     </div>
@@ -609,7 +624,7 @@
                             <h3 class="text-2xl font-black text-white mb-1" id="detectedDisease">--</h3>
                             <p class="text-xs text-primary font-bold" id="diseaseType">--</p>
                         </div>
-                        <div class="p-6 rounded-2xl bg-white/5 border border-white/5">
+                        <div id="confidenceMetric" class="p-6 rounded-2xl bg-white/5 border border-white/5">
                             <p class="text-[10px] text-on-surface-variant uppercase tracking-widest mb-2 font-bold">
                                 Severity Level</p>
                             <h3 class="text-2xl font-black" id="severityLevel">--</h3>
@@ -640,6 +655,19 @@
                                 <p id="aiVisualFindings" class="text-sm text-white/80 leading-relaxed"></p>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="glass-card rounded-2xl p-6 border border-primary/20 bg-primary/5">
+                    <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">route</span>
+                        What Should I Do Now?
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-center">
+                        <div class="p-3 rounded-xl bg-white/5"><p class="text-xs font-black text-primary uppercase">Detected</p><p class="text-xs text-on-surface-variant mt-1">Review the issue and visual findings.</p></div>
+                        <div class="p-3 rounded-xl bg-white/5"><p class="text-xs font-black text-primary uppercase">Assess</p><p class="text-xs text-on-surface-variant mt-1">Use the displayed severity and affected parts.</p></div>
+                        <div class="p-3 rounded-xl bg-white/5"><p class="text-xs font-black text-primary uppercase">Manage</p><p class="text-xs text-on-surface-variant mt-1">Review available project reference information.</p></div>
+                        <div class="p-3 rounded-xl bg-white/5"><p class="text-xs font-black text-primary uppercase">Recheck</p><p class="text-xs text-on-surface-variant mt-1">Upload a new image for a separate scan.</p></div>
                     </div>
                 </div>
 
@@ -693,6 +721,7 @@
                                 <span
                                     class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-widest">ECO-FRIENDLY</span>
                             </div>
+                            <p class="mb-4 text-xs text-on-surface-variant">Reference information from the existing project database. Verify any treatment decision with a qualified local agricultural advisor and the official product label.</p>
                             <div id="organicTreatment" class="space-y-4"></div>
                         </div>
                     </div>
@@ -710,6 +739,7 @@
                                 <span
                                     class="px-3 py-1 rounded-full bg-orange-500/20 text-orange-400 text-[10px] font-bold tracking-widest">FAST-ACTING</span>
                             </div>
+                            <p class="mb-4 text-xs text-on-surface-variant">Reference information from the existing project database, not a confirmed prescription. Verify locally before use.</p>
                             <div id="chemicalTreatment" class="space-y-4"></div>
                         </div>
 

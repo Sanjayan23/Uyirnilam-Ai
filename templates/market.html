@@ -592,6 +592,7 @@
                             Market Trends</h1>
                         <p class="animated-subtitle text-sm md:text-base mt-2">Dashboard-linked real-time prices and selling
                             recommendations</p>
+                        <p id="market-active-crop" class="text-xs font-bold text-primary mt-3">No Active Crop Selected</p>
                     </div>
                 </div>
                 <!-- Export Report Button -->
@@ -691,6 +692,33 @@
 
             <!-- ════ MARKET CONTENT ════ -->
             <div id="marketContent" class="space-y-10">
+
+                <div id="market-active-preference" class="hidden rounded-2xl border-2 border-primary/60 bg-primary/10 p-5 shadow-[0_0_28px_rgba(16,185,129,0.18)]">
+                    <div class="flex flex-col lg:flex-row lg:items-center gap-5">
+                        <img id="market-active-preference-image" src="" alt="Active crop"
+                            class="w-full lg:w-44 h-32 object-cover rounded-xl border border-primary/30">
+                        <div class="flex-1">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div>
+                                    <p class="text-[10px] text-primary uppercase tracking-[0.2em] font-black">Farmer's First Preference</p>
+                                    <h3 id="market-active-preference-name" class="text-2xl font-black text-white">--</h3>
+                                </div>
+                                <span class="shrink-0 px-3 py-2 rounded-lg bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">Active Crop</span>
+                            </div>
+                            <p class="text-xs text-on-surface-variant mt-1">Selected from Dashboard and prioritized for this market view.</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                                <div class="p-3 rounded-xl bg-black/20 border border-white/5">
+                                    <p class="text-[9px] text-on-surface-variant uppercase font-black">Current Price</p>
+                                    <p id="market-active-preference-price" class="text-sm font-black text-white mt-1">--</p>
+                                </div>
+                                <div class="p-3 rounded-xl bg-black/20 border border-white/5">
+                                    <p class="text-[9px] text-on-surface-variant uppercase font-black">Demand</p>
+                                    <p id="market-active-preference-demand" class="text-sm font-black text-primary mt-1">--</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- ── TOP 5 CROPS FROM DASHBOARD ── -->
                 <div class="glass-card rounded-2xl p-5 border border-primary/20">
@@ -1407,11 +1435,16 @@
             renderTopCropsBar();
             renderAllCropsGrid();
 
-            // Prioritize the crop analyzed on the dashboard if it exists
+            // Prioritize the shared Active Crop if it exists
             const lastAnalyzed = storageGet('selectedCrop');
             let initialCrop = topCrops[0].name;
 
-            if (lastAnalyzed) {
+            const activeCrop = typeof window.getActiveCrop === 'function' ? window.getActiveCrop() : null;
+            if (activeCrop && activeCrop.name && DB[activeCrop.name.toLowerCase()]) {
+                initialCrop = activeCrop.name.toLowerCase();
+            }
+
+            if (!activeCrop && lastAnalyzed) {
                 try {
                     const parsed = JSON.parse(lastAnalyzed);
                     if (parsed.name && DB[parsed.name.toLowerCase()]) {
@@ -1439,6 +1472,18 @@
                 } catch (e) { topCrops = []; }
             }
             if (!topCrops.length) topCrops = DEFAULT_TOP5;
+            prioritizeActiveCropInMarket();
+        }
+
+        function prioritizeActiveCropInMarket() {
+            const active = typeof window.getActiveCrop === 'function' ? window.getActiveCrop() : null;
+            if (!active || !active.name) return;
+
+            const index = topCrops.findIndex(crop => crop.name === active.name.toLowerCase());
+            if (index > 0) {
+                const [activeCrop] = topCrops.splice(index, 1);
+                topCrops.unshift(activeCrop);
+            }
         }
 
         // ─── RENDER TOP CROPS BAR ────────────────────────────────────
@@ -1448,6 +1493,8 @@
 
             bar.innerHTML = topCrops.map((crop, i) => {
                 const d = DB[crop.name];
+                const active = typeof window.getActiveCrop === 'function' ? window.getActiveCrop() : null;
+                const isActive = active && active.name === crop.name;
                 const todayPrice = d.fiveDayPrices[4];
                 const yestPrice = d.fiveDayPrices[3];
                 const diff = todayPrice - yestPrice;
@@ -1460,6 +1507,7 @@
                 <div class="relative z-10">
                     <div class="flex items-center justify-between mb-2">
                         <div class="rank-badge ${rankColors[i]} shadow-lg">${i + 1}</div>
+                        ${isActive ? '<span class="text-[8px] font-black uppercase tracking-widest text-emerald-300">Preferred</span>' : ''}
                     </div>
                     <p class="text-sm font-black text-white mb-0.5 drop-shadow-md uppercase tracking-tight group-hover/card:scale-105 transition-transform">${d.displayName}</p>
                     <p class="text-base font-bold text-primary drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">₹${todayPrice.toLocaleString()}</p>
@@ -1527,6 +1575,18 @@
 
         async function selectCrop(cropName) {
             selectedCrop = cropName;
+            selectedCropName = cropName;
+            const active = typeof window.getActiveCrop === 'function' ? window.getActiveCrop() : null;
+            const indicator = document.getElementById('market-active-crop');
+            if (indicator) {
+                if (active && active.name === cropName) {
+                    indicator.textContent = `Active Crop: ${active.label || active.name}`;
+                } else if (active && active.name && !DB[active.name.toLowerCase()]) {
+                    indicator.textContent = `Active Crop: ${active.label || active.name} (market data unavailable)`;
+                } else {
+                    indicator.textContent = `Market View: ${DB[cropName]?.displayName || cropName}`;
+                }
+            }
             document.querySelectorAll('.crop-tab').forEach(btn => {
                 if (btn.dataset.crop === cropName) btn.classList.add('active-tab');
                 else btn.classList.remove('active-tab');
@@ -1534,6 +1594,8 @@
 
             const d = DB[cropName];
             if (!d) return;
+
+            updateMarketActivePreference(cropName, d);
 
             document.getElementById('noCropWarning').classList.add('hidden');
             document.getElementById('marketContent').classList.remove('hidden');
@@ -1569,7 +1631,24 @@
                 renderNearbyMarkets(cropName);
                 renderBuyers(cropName);
                 buildChart(cropName, currentTF);
+                updateMarketActivePreference(cropName, DB[cropName]);
             }
+        }
+
+        function updateMarketActivePreference(cropName, cropData) {
+            const active = typeof window.getActiveCrop === 'function' ? window.getActiveCrop() : null;
+            const panel = document.getElementById('market-active-preference');
+            if (!panel || !active || active.name !== cropName) return;
+
+            const image = document.getElementById('market-active-preference-image');
+            const name = document.getElementById('market-active-preference-name');
+            const price = document.getElementById('market-active-preference-price');
+            const demand = document.getElementById('market-active-preference-demand');
+            if (image) image.src = cropData.image || '';
+            if (name) name.textContent = active.label || cropData.displayName;
+            if (price) price.textContent = `₹${Number(cropData.fiveDayPrices?.[4] || 0).toLocaleString()}`;
+            if (demand) demand.textContent = cropData.demand || 'Not available';
+            panel.classList.remove('hidden');
         }
 
         // ─── 5-DAY PRICE CARDS ───────────────────────────────────────

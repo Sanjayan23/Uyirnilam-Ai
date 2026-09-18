@@ -553,6 +553,7 @@ def dashboard():
     return render_template('dashboard.html',
                            user_name=session.get('user_name'),
                            user_photo=session.get('user_photo'),
+                           crop_info=crop_info,
                            notification_count=get_notification_count())
 
 @app.route('/create')
@@ -1033,10 +1034,12 @@ def analyze_image():
     # ── Parse image from request ──────────────────────────────────
     image_data = None
     media_type = 'image/jpeg'
+    active_crop = ''
 
     if request.is_json:
         body = request.get_json()
         raw = body.get('imageData', '')
+        active_crop = (body.get('crop') or '').strip()
         if raw.startswith('data:'):
             parts = raw.split(',', 1)
             media_type = parts[0].split(':')[1].split(';')[0]
@@ -1070,7 +1073,12 @@ def analyze_image():
                     },
                     {
                         'type': 'text',
-                        'text': 'Analyze this plant image for diseases, pests, or health issues. Respond ONLY with the JSON format specified in your instructions.'
+                        'text': (
+                            'Analyze this plant image for diseases, pests, or health issues. '
+                            f'The farmer selected {active_crop} as the active crop context. '
+                            'Use that context when relevant, but do not invent findings. '
+                            'Respond ONLY with the JSON format specified in your instructions.'
+                        )
                     }
                 ],
             }],

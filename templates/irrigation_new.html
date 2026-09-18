@@ -672,6 +672,7 @@
                         </h1>
                         <p class="animated-subtitle text-sm md:text-base mt-2">Optimize water usage with AI-powered
                             scheduling</p>
+                        <p id="irrigation-active-crop" class="text-xs font-bold text-primary mt-3">No Active Crop Selected</p>
                         <!-- Power Points Highlight -->
                         <div class="power-points-container"
                             style="--icon-color-start: #22d3ee; --icon-color-end: #3b82f6; --icon-glow: rgba(34, 211, 238, 0.4); gap: 1.5rem;">
@@ -734,6 +735,37 @@
                             <div class="w-px h-12 bg-white/10 mx-2"></div>
                             <div class="flex flex-col justify-center">
                                 <p class="text-[20px] text-on-surface-variant/60 font-medium italic">Max 5 Crops</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="active-crop-preference" class="hidden rounded-2xl border-2 border-primary/60 bg-primary/10 p-5 shadow-[0_0_28px_rgba(16,185,129,0.18)]">
+                        <div class="flex flex-col lg:flex-row lg:items-center gap-5">
+                            <img id="active-crop-preference-image" src="" alt="Active crop"
+                                class="w-full lg:w-44 h-32 object-cover rounded-xl border border-primary/30">
+                            <div class="flex-1">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div>
+                                        <p class="text-[10px] text-primary uppercase tracking-[0.2em] font-black">Farmer's First Preference</p>
+                                        <h3 id="active-crop-preference-name" class="text-2xl font-black text-white">--</h3>
+                                    </div>
+                                    <span class="shrink-0 px-3 py-2 rounded-lg bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">Active Crop</span>
+                                </div>
+                                <p class="text-xs text-on-surface-variant mt-1">Selected from Dashboard and prioritized for this irrigation plan.</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+                                    <div class="p-3 rounded-xl bg-black/20 border border-white/5">
+                                        <p class="text-[9px] text-on-surface-variant uppercase font-black">Need</p>
+                                        <p id="active-crop-preference-water" class="text-sm font-black text-white mt-1">--</p>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-black/20 border border-white/5">
+                                        <p class="text-[9px] text-on-surface-variant uppercase font-black">Method</p>
+                                        <p id="active-crop-preference-method" class="text-sm font-black text-white mt-1">--</p>
+                                    </div>
+                                    <div class="p-3 rounded-xl bg-black/20 border border-white/5">
+                                        <p class="text-[9px] text-on-surface-variant uppercase font-black">Humidity</p>
+                                        <p id="active-crop-preference-humidity" class="text-sm font-black text-primary mt-1">--</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1407,6 +1439,7 @@
                     item.classList.remove('sidebar-cylindrical-highlight');
                 }
             });
+            syncActiveCropToIrrigation();
             loadRecommendedCrops();
             renderGlobalCropsGrid();
             initIrrigationWeather();
@@ -1429,6 +1462,36 @@
             barley: { name: 'Barley', variety: 'Hordeum vulgare', image: 'barley.jpg' },
             oats: { name: 'Oats', variety: 'Avena sativa', image: 'oats.png' }
         };
+
+        function syncActiveCropToIrrigation() {
+            const active = typeof window.getActiveCrop === 'function' ? window.getActiveCrop() : null;
+            const indicator = document.getElementById('irrigation-active-crop');
+            const preference = document.getElementById('active-crop-preference');
+            const preferenceName = document.getElementById('active-crop-preference-name');
+            const preferenceImage = document.getElementById('active-crop-preference-image');
+            const preferenceWater = document.getElementById('active-crop-preference-water');
+            const preferenceMethod = document.getElementById('active-crop-preference-method');
+            const preferenceHumidity = document.getElementById('active-crop-preference-humidity');
+            if (!active || !active.name) return;
+
+            const name = active.name.toLowerCase();
+            const profile = irrigationDatabase[name];
+            const cropImage = cropImages[name];
+            if (cropDatabase[name]) {
+                selectedCrops = [name, ...selectedCrops.filter(crop => crop !== name)].slice(0, 5);
+            }
+            if (indicator) indicator.textContent = `Active Crop: ${active.label || active.name}`;
+            if (preference && preferenceName) {
+                preferenceName.textContent = active.label || active.name;
+                if (preferenceImage && cropImage) {
+                    preferenceImage.src = cropImage;
+                }
+                if (preferenceWater) preferenceWater.textContent = profile?.waterRequirement || 'Not available';
+                if (preferenceMethod) preferenceMethod.textContent = profile?.method || 'Not available';
+                if (preferenceHumidity) preferenceHumidity.textContent = profile?.idealHumidity ? `${profile.idealHumidity}%` : 'Not available';
+                preference.classList.remove('hidden');
+            }
+        }
 
         function renderGlobalCropsGrid() {
             const grid = document.getElementById('allCropsGrid');
@@ -1521,7 +1584,6 @@
                 try {
                     const data = JSON.parse(stored);
                     recommendedCrops = Array.isArray(data) ? data : (data.recommended_crops || []);
-
                     if (recommendedCrops.length > 0) {
                         renderCropCards();
                         document.getElementById('noCropsWarning').classList.add('hidden');
@@ -1553,6 +1615,8 @@
                 const image = cropImages[name] || `https://ui-avatars.com/api/?name=${crop.name}&background=10b981&color=020f0c&size=256&bold=true`;
                 const irrigation = irrigationDatabase[name] || defaultProfile;
                 const isSelected = selectedCrops.includes(name);
+                const active = typeof window.getActiveCrop === 'function' ? window.getActiveCrop() : null;
+                const isActive = active && active.name === name;
 
                 const card = document.createElement('div');
                 card.id = `card-${name}`;
@@ -1565,7 +1629,7 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                         <div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
                             <div>
-                                <p class="text-[10px] text-emerald-400 font-black uppercase tracking-widest mb-1">AI Recommendation</p>
+                                <p class="text-[10px] text-emerald-400 font-black uppercase tracking-widest mb-1">${isActive ? 'Active Crop • Preferred' : 'AI Recommendation'}</p>
                                 <h3 class="text-xl font-black text-white leading-none">${crop.name}</h3>
                             </div>
                             <div class="select-indicator w-8 h-8 rounded-full flex items-center justify-center transition-all ${isSelected ? 'bg-primary' : 'bg-white/10 backdrop-blur-md'}">

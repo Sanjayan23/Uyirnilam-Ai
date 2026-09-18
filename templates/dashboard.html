@@ -18,6 +18,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Uyirnilam AI">
+    <script id="dashboard-crop-info" type="application/json">{{ crop_info|default({})|tojson }}</script>
     <script>
         // FOUC Mitigation: Reveal page once styles are ready
         document.addEventListener('DOMContentLoaded', () => {
@@ -752,6 +753,88 @@
                     </div>
                 </div>
 
+                <div id="active-crop-selection" style="display: none;"
+                    class="md:col-span-12 glass-card rounded-2xl p-6 border border-primary/20">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+                        <div>
+                            <h3 class="text-lg font-bold text-white">Choose Your Active Crop</h3>
+                            <p class="text-sm text-on-surface-variant mt-1">Select one recommendation to use across Pest Control and other modules.</p>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                            <select id="active-crop-select"
+                                class="min-w-52 rounded-xl px-4 py-3 text-sm focus:outline-none appearance-none cursor-pointer">
+                                <option value="">Select a recommended crop</option>
+                            </select>
+                            <button type="button" onclick="selectActiveCropFromDashboard()"
+                                class="px-5 py-3 rounded-xl bg-primary text-surface text-xs font-black uppercase tracking-widest hover:bg-primary/80 transition-all">
+                                Set Active Crop
+                            </button>
+                            <button type="button" onclick="addOwnCropFromDashboard()"
+                                class="px-5 py-3 rounded-xl bg-white/10 border border-white/10 text-white text-xs font-black uppercase tracking-widest hover:bg-primary/20 hover:text-primary transition-all">
+                                Add My Own Crop
+                            </button>
+                        </div>
+                    </div>
+                    <p id="dashboard-active-crop" class="hidden mt-4 text-xs font-bold text-primary"></p>
+                    <div id="dashboard-active-preference" class="hidden mt-5 pt-5 border-t border-white/10">
+                        <div class="rounded-2xl border-2 border-primary/60 bg-primary/10 p-5 shadow-[0_0_28px_rgba(16,185,129,0.18)]">
+                            <div class="flex flex-col lg:flex-row lg:items-center gap-5">
+                                <img id="dashboard-active-preference-image" src="" alt="Active crop"
+                                    class="w-full lg:w-44 h-32 object-cover rounded-xl border border-primary/30">
+                                <div class="flex-1">
+                                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                        <div>
+                                            <p class="text-[10px] text-primary uppercase tracking-[0.2em] font-black">Farmer's First Preference</p>
+                                            <h3 id="dashboard-active-preference-name" class="text-2xl font-black text-white">--</h3>
+                                        </div>
+                                        <span class="shrink-0 px-3 py-2 rounded-lg bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">Active Crop</span>
+                                    </div>
+                                    <p class="text-xs text-on-surface-variant mt-1">This crop is shared with Pest Control, Irrigation, Harvest, and Market.</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+                                        <div class="p-3 rounded-xl bg-black/20 border border-white/5">
+                                            <p class="text-[9px] text-on-surface-variant uppercase font-black">Match</p>
+                                            <p id="dashboard-active-preference-score" class="text-sm font-black text-primary mt-1">Farmer selected</p>
+                                        </div>
+                                        <div class="p-3 rounded-xl bg-black/20 border border-white/5">
+                                            <p class="text-[9px] text-on-surface-variant uppercase font-black">Water</p>
+                                            <p id="dashboard-active-preference-water" class="text-sm font-black text-white mt-1">Not available</p>
+                                        </div>
+                                        <div class="p-3 rounded-xl bg-black/20 border border-white/5">
+                                            <p class="text-[9px] text-on-surface-variant uppercase font-black">Profit</p>
+                                            <p id="dashboard-active-preference-profit" class="text-sm font-black text-white mt-1">Not available</p>
+                                        </div>
+                                        <div class="p-3 rounded-xl bg-black/20 border border-white/5">
+                                            <p class="text-[9px] text-on-surface-variant uppercase font-black">Growth Cycle</p>
+                                            <p id="dashboard-active-preference-time" class="text-sm font-black text-white mt-1">Not available</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="own-crop-picker" class="hidden mt-5 pt-5 border-t border-white/10">
+                        <div class="flex flex-col sm:flex-row sm:items-end gap-3">
+                            <div class="flex-1">
+                                <label for="own-crop-select"
+                                    class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold mb-1.5 block">Choose
+                                    Your Crop</label>
+                                <select id="own-crop-select"
+                                    class="w-full rounded-xl px-4 py-3 text-sm focus:outline-none appearance-none cursor-pointer">
+                                    <option value="">Select a crop</option>
+                                </select>
+                            </div>
+                            <button type="button" onclick="confirmOwnCrop()"
+                                class="px-5 py-3 rounded-xl bg-primary text-surface text-xs font-black uppercase tracking-widest hover:bg-primary/80 transition-all">
+                                Use This Crop
+                            </button>
+                            <button type="button" onclick="closeOwnCropPicker()"
+                                class="px-5 py-3 rounded-xl bg-white/10 border border-white/10 text-white text-xs font-black uppercase tracking-widest hover:bg-white/20 transition-all">
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="hidden md:col-span-12 glass-card rounded-2xl p-6 md:p-12 flex-col items-center justify-center min-h-[450px] relative overflow-hidden"
                     id="loading-state">
                     <!-- Massive Animating Logo Orb -->
@@ -990,6 +1073,7 @@
         // ──────────────────────────────────────────────────────────────────────
 
         let allCrops = [];
+        const dashboardCropInfo = JSON.parse(document.getElementById('dashboard-crop-info')?.textContent || '{}');
         let chart;
         let currentFilter = 'all';
         let currentMetric = 'profit';
@@ -1071,6 +1155,7 @@
                     showChart(allCrops, currentMetric, currentFilter);
                 }, 100);
             }
+            restoreDashboardActiveCrop();
         }
 
         window.addEventListener('load', () => {
@@ -1203,22 +1288,6 @@
                     storageSet('recommendedCrops', JSON.stringify(top5Crops));
                     storageSet('landSize', document.getElementById('landSize').value || '1');
 
-                    if (allCrops.length > 0) {
-                        const top = allCrops[0];
-                        const plantingDate = new Date();
-                        plantingDate.setDate(plantingDate.getDate() - 30);
-
-                        storageSet('selectedCrop', JSON.stringify({
-                            name: (top.name || '').toLowerCase(), // ← always lowercase
-                            landSize: landSizeInput,
-                            totalWater: top.total_water || top.water || 0,
-                            totalProfit: top.total_profit || top.profit || 0,
-                            harvestDays: safe(top.time, 0) * 30,
-                            plantedDate: new Date().toISOString().split('T')[0]
-                        }));
-                        storageSet('plantingDate', plantingDate.toISOString());
-                    }
-
                     // ── Verification log ──────────────────────────────────────
                     console.log('✅✅✅ CROP DATA SAVED IMMEDIATELY ✅✅✅');
                     console.log('recommendedCrops:', storageGet('recommendedCrops'));
@@ -1276,7 +1345,6 @@
 
                     storageSet('allCropsData', JSON.stringify(testCrops));
                     storageSet('recommendedCrops', JSON.stringify(top5));
-                    storageSet('selectedCrop', JSON.stringify({ name: 'rice', landSize: 5, totalWater: 12000, totalProfit: 500000 }));
                     storageSet('landSize', '5');
 
                     const pd = new Date();
@@ -1334,6 +1402,10 @@
             document.getElementById("top-crop-water").innerText = safe(top.total_water || top.water || 0).toLocaleString() + " L";
             document.getElementById("top-crop-time").innerText = (safe(top.time, 0) * 30) + " Days";
             document.getElementById("top-crop-desc").innerText = top.ai_message || top.reason || "";
+            const activeCropSelect = document.getElementById("active-crop-select");
+            activeCropSelect.innerHTML = '<option value="">Select a recommended crop</option>' +
+                crops.slice(0, 5).map(c => `<option value="${escDashboardValue(c.name)}">${String(c.name || "Crop").toUpperCase()}</option>`).join("");
+            document.getElementById("active-crop-selection").style.display = '';
 
             let altHtml = "";
             crops.slice(1).forEach(c => {
@@ -1379,6 +1451,113 @@
         </div>`;
             });
             document.getElementById("alternative-crops").innerHTML = altHtml;
+        }
+
+        function selectActiveCropFromDashboard(crop) {
+            if (!crop) {
+                const selectedName = document.getElementById('active-crop-select')?.value;
+                crop = allCrops.find(item => (item.name || '').toLowerCase() === selectedName);
+            }
+            const name = typeof crop === 'string' ? crop : crop?.name;
+            if (!name) return;
+
+            const normalizedName = String(name).trim().toLowerCase();
+            const label = normalizedName.replace(/\b\w/g, letter => letter.toUpperCase());
+            if (typeof window.syncActiveCrop === 'function') {
+                window.syncActiveCrop(normalizedName, label);
+            }
+
+            const cropData = typeof crop === 'object' ? crop : { name: normalizedName };
+            storageSet('selectedCrop', JSON.stringify({
+                name: normalizedName,
+                landSize: document.getElementById('landSize')?.value || '1',
+                totalWater: cropData.total_water || cropData.totalWater || cropData.water || 0,
+                totalProfit: cropData.total_profit || cropData.profit || 0,
+                harvestDays: safe(cropData.time, 0) * 30,
+                plantedDate: new Date().toISOString().split('T')[0]
+            }));
+            storageSet('plantingDate', new Date().toISOString());
+
+            const indicator = document.getElementById('dashboard-active-crop');
+            indicator.textContent = `Active Crop: ${label}`;
+            indicator.classList.remove('hidden');
+            renderDashboardActivePreference(cropData, label);
+            if (window.uyirnilam?.showSuccess) window.uyirnilam.showSuccess(`${label} is now your Active Crop.`);
+        }
+
+        function restoreDashboardActiveCrop() {
+            const active = typeof window.getActiveCrop === 'function' ? window.getActiveCrop() : null;
+            const indicator = document.getElementById('dashboard-active-crop');
+            if (active && active.name && indicator) {
+                indicator.textContent = `Active Crop: ${active.label || active.name}`;
+                indicator.classList.remove('hidden');
+                const cropData = allCrops.find(crop => (crop.name || '').toLowerCase() === active.name.toLowerCase()) || { name: active.name };
+                renderDashboardActivePreference(cropData, active.label || active.name);
+            }
+        }
+
+        function renderDashboardActivePreference(crop, label) {
+            const panel = document.getElementById('dashboard-active-preference');
+            if (!panel) return;
+
+            const image = document.getElementById('dashboard-active-preference-image');
+            const name = document.getElementById('dashboard-active-preference-name');
+            const score = document.getElementById('dashboard-active-preference-score');
+            const water = document.getElementById('dashboard-active-preference-water');
+            const profit = document.getElementById('dashboard-active-preference-profit');
+            const time = document.getElementById('dashboard-active-preference-time');
+            const cropName = String(crop?.name || '').toLowerCase();
+            const profile = dashboardCropInfo[cropName] || {};
+            const imagePath = getDashboardCropImage(cropName);
+
+            if (image) {
+                image.classList.toggle('hidden', !imagePath);
+                if (imagePath) image.src = imagePath;
+            }
+            if (name) name.textContent = label || crop?.name || 'Active Crop';
+            if (score) score.textContent = Number.isFinite(Number(crop?.score)) ? `${Number(crop.score).toFixed(1)}%` : 'Farmer selected';
+            if (water) water.textContent = crop?.total_water || crop?.totalWater || crop?.water || (profile.water ? `${profile.water} L` : 'Not available');
+            if (profit) profit.textContent = crop?.total_profit || crop?.profit || (profile.profit ? `₹${Number(profile.profit).toLocaleString()}` : 'Not available');
+            if (time) time.textContent = crop?.time ? `${crop.time} months` : (profile.time ? `${profile.time} months` : 'Not available');
+            panel.classList.remove('hidden');
+        }
+
+        function getDashboardCropImage(name) {
+            const images = {
+                grapes: '/static/images/crop/grapes.png', banana: '/static/images/crop/banana.png', rice: '/static/images/crop/rice.png',
+                wheat: '/static/images/crop/wheat.png', maize: '/static/images/crop/maize.png', cotton: '/static/images/crop/cotton.png',
+                mango: '/static/images/crop/mango.png', sugarcane: '/static/images/crop/sugarcane.png', soybean: '/static/images/crop/soybean.png',
+                groundnut: '/static/images/crop/groundnut.png', millet: '/static/images/crop/millet.png', pulses: '/static/images/crop/pulses.png',
+                barley: '/static/images/crop/barley.jpg', oats: '/static/images/crop/oats.png'
+            };
+            return images[name] || '';
+        }
+
+        function escDashboardValue(value) {
+            return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function addOwnCropFromDashboard() {
+            const cropOptions = ['rice', 'wheat', 'maize', 'grapes', 'mango', 'banana', 'sugarcane', 'cotton', 'soybean', 'groundnut', 'millet', 'pulses', 'barley', 'oats'];
+            const picker = document.getElementById('own-crop-picker');
+            const select = document.getElementById('own-crop-select');
+            if (!picker || !select) return;
+
+            select.innerHTML = '<option value="">Select a crop</option>' +
+                cropOptions.map(crop => `<option value="${crop}">${crop.replace(/\b\w/g, letter => letter.toUpperCase())}</option>`).join('');
+            picker.classList.remove('hidden');
+            select.focus();
+        }
+
+        function confirmOwnCrop() {
+            const name = document.getElementById('own-crop-select')?.value;
+            if (!name) return;
+            selectActiveCropFromDashboard(name);
+            closeOwnCropPicker();
+        }
+
+        function closeOwnCropPicker() {
+            document.getElementById('own-crop-picker')?.classList.add('hidden');
         }
 
         function getCityName(lat, lon) {

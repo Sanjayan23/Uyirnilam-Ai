@@ -114,11 +114,14 @@ function showSuccess(message, duration = 3000) {
     alertDiv.className = 'alert-success';
     alertDiv.style.cssText = `
         position: fixed;
-        top: 20px;
+        top: 96px;
         right: 20px;
+        left: 20px;
         z-index: 10000;
         animation: fadeIn 0.3s ease-in-out;
         max-width: 400px;
+        width: fit-content;
+        margin-left: auto;
     `;
     alertDiv.innerHTML = `✓ ${message}`;
     document.body.appendChild(alertDiv);

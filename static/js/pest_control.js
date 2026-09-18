@@ -39,6 +39,7 @@ const PestState = {
 // ═══════════════════════════════════════════════════════════════
 window.addEventListener("load", () => {
     setupDragDrop();
+    updateActiveCropContext();
     restorePersistedResult();
     console.log("✅ Uyirnilam AI Pest Control Engine v4.0 Initialized");
 });
@@ -109,12 +110,19 @@ async function analyzeImage() {
     if (!PestState.uploadedImageData) return;
     if (PestState.isAnalyzing) return;
 
+    const activeCrop = getActiveCropContext();
+    if (!activeCrop) {
+        showToast("Select or add an Active Crop from the Dashboard first.", "warning");
+        updateActiveCropContext();
+        return;
+    }
+
     PestState.isAnalyzing = true;
     showScanningAnimation();
 
     try {
         // Try real AI API first
-        const result = await callAnalysisAPI(PestState.uploadedImageData);
+        const result = await callAnalysisAPI(PestState.uploadedImageData, activeCrop);
         completeScan(result);
     } catch (err) {
         // Honest failure: no fabricated diagnosis is shown. A guessed
@@ -131,14 +139,14 @@ async function analyzeImage() {
 }
 
 // ── Real AI API Call ────────────────────────────────────────────
-async function callAnalysisAPI(imageData) {
+async function callAnalysisAPI(imageData, activeCrop) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), PEST_CONFIG.ANALYSIS_TIMEOUT_MS);
 
     const response = await fetch(`${PEST_CONFIG.API_BASE}/analyze-image`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageData }),
+        body: JSON.stringify({ imageData, crop: activeCrop.name }),
         signal: controller.signal
     });
 
@@ -163,7 +171,7 @@ function normalizeAPIResponse(data) {
         disease_name: data.disease || data.disease_name || "Unknown Disease",
         type: data.type || "Fungal Disease",
         severity: data.severity || "MODERATE",
-        confidence: data.confidence || 78,
+        confidence: Number.isFinite(Number(data.confidence)) ? Number(data.confidence) : null,
         description: data.description || "Disease detected. Consult local agronomist for confirmation.",
         cause: data.cause || "Pathogenic infection",
         spread: data.spread || "Environmental conditions",
@@ -269,9 +277,15 @@ function displayResults(data) {
                 severity === "LOW" ? "Monitor closely" : "No intervention needed";
 
     // ── Confidence ──────────────────────────────────────────────
-    const confidence = parseInt(data.confidence) || 78;
-    document.getElementById("confidencePercent").textContent = confidence + "%";
-    document.getElementById("confidenceBar").style.width = confidence + "%";
+    const confidence = Number.isFinite(Number(data.confidence)) ? Number(data.confidence) : null;
+    const confidenceMetric = document.getElementById("confidenceMetric");
+    if (confidence === null) {
+        confidenceMetric.classList.add("hidden");
+    } else {
+        confidenceMetric.classList.remove("hidden");
+        document.getElementById("confidencePercent").textContent = confidence + "%";
+        document.getElementById("confidenceBar").style.width = confidence + "%";
+    }
     const confBar = document.getElementById("confidenceBar");
     confBar.className = "h-full rounded-full transition-all duration-700 " +
         (confidence >= 85 ? "bg-emerald-400" :
@@ -464,6 +478,7 @@ function resetUpload() {
     document.getElementById("uploadPrompt").classList.remove("hidden");
     document.getElementById("uploadedPreview").classList.add("hidden");
     hideResults();
+    updateActiveCropContext();
 
     // Hide fallback banner
     const apiBanner = document.getElementById("apiFallbackBanner");
@@ -515,4 +530,22 @@ function escHtml(str) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+function getActiveCropContext() {
+    if (typeof window.getActiveCrop !== "function") return null;
+    const crop = window.getActiveCrop();
+    return crop && crop.name ? crop : null;
+}
+
+function updateActiveCropContext() {
+    const active = document.getElementById("activeCropPresent");
+    const empty = document.getElementById("noActiveCrop");
+    const name = document.getElementById("activeCropName");
+    if (!active || !empty || !name) return;
+
+    const crop = getActiveCropContext();
+    active.classList.toggle("hidden", !crop);
+    empty.classList.toggle("hidden", Boolean(crop));
+    if (crop) name.textContent = crop.label || crop.name;
 }

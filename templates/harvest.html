@@ -543,6 +543,7 @@
                             Harvest Strategy</h1>
                         <p class="animated-subtitle text-sm md:text-base mt-2">Maximum yield through AI-driven maturity analysis
                         </p>
+                        <p id="harvest-active-crop" class="text-xs font-bold text-primary mt-3">No Active Crop Selected</p>
 
                         <!-- Power Points Highlight -->
                         <div class="power-points-container"
@@ -1180,6 +1181,8 @@
                 } catch (e) { console.error('Sync error:', e); }
             }
 
+            syncActiveCropToHarvest();
+
             renderCropSelectionCards();
             updateSelectedCount();
 
@@ -1219,6 +1222,17 @@
                     } catch (e) { }
                 }
             }
+        }
+
+        function syncActiveCropToHarvest() {
+            const active = typeof window.getActiveCrop === 'function' ? window.getActiveCrop() : null;
+            const indicator = document.getElementById('harvest-active-crop');
+            if (!active || !active.name) return;
+
+            const name = normalizeCropName(active.name);
+            if (!cropLookup[name]) addCropToAvailable({ name });
+            if (cropLookup[name]) selectedCrops = [name, ...selectedCrops.filter(crop => crop !== name)];
+            if (indicator) indicator.textContent = `Active Crop: ${active.label || active.name}`;
         }
 
         function addCropToAvailable(raw) {
